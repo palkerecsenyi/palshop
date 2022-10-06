@@ -1,9 +1,11 @@
 import { formatTripStatus, TripStatus, useTripContext } from "../data/trips"
-import { timestampFormat } from "../data/util"
+import { currencyFormat, timestampFormat } from "../data/util"
 import { Link } from "react-router-dom"
+import { useStripeStatus } from "../data/stripe"
 
 export default function Trip() {
     const trip = useTripContext()
+    const status = useStripeStatus()
 
     if (!trip) {
         return <></>
@@ -20,6 +22,28 @@ export default function Trip() {
         <p>
             After this time, payments will open. Please make payments by <strong>{timestampFormat(trip.paymentDeadline)}</strong>.
         </p>
+
+        {status && <p>
+            Your invoices will be emailed to <strong>{status.email}</strong>.
+        </p>}
+
+        {status && status.balance !== 0 && <article className="message mt-4 is-success">
+            <div className="message-body">
+                <p>
+                    <strong>You have a balance!</strong>
+                </p>
+                <p>
+                    Your account has a balance of <strong>{currencyFormat(status.balance)}</strong>. This
+                    will be applied as a {status.balance > 0 ? 'discount' : 'surcharge'} to your next order.
+                </p>
+                {status.balance > 0 && <p>
+                    This might be because an item in a previous order got substituted for a cheaper alternative.
+                </p>}
+                {status.balance < 0 && <p>
+                    This might be because you were accidentally missing a charge in your last order.
+                </p>}
+            </div>
+        </article>}
 
         <article className={`message mt-4 ${trip.status === TripStatus.AcceptingOrders ? 'is-success' : 'is-info'}`}>
             <div className="message-header">
