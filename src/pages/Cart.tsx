@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { useTripContext } from "../data/trips"
+import { formatTripStatus, TripStatus, useTripContext } from "../data/trips"
 import { useCart, useCartItems } from "../data/cart"
 import CartInit from "../components/Cart/CartInit"
 import CartEmpty from "../components/Cart/CartEmpty"
@@ -17,6 +17,22 @@ export default function Cart() {
 
     if (!trip) {
         return <></>
+    }
+
+    if (trip.status !== TripStatus.AcceptingOrders) {
+        return <div className="container py-6 px-4">
+            <h1 className="title">
+                Trip closed :(
+            </h1>
+
+            <p className="is-size-4">
+                Unfortunately, this trip is closed and not accepting any more orders. At the moment, it's {formatTripStatus(trip.status)}.
+            </p>
+
+            <Link to="/" className="button mt-4">
+                Back home
+            </Link>
+        </div>
     }
 
     return <div className="container py-6 px-4">

@@ -9,7 +9,7 @@ export default function Trip() {
         return <></>
     }
 
-    return <div className="container py-6">
+    return <div className="container py-6 px-4">
         <h1 className="title">
             Current shopping trip
         </h1>
@@ -34,6 +34,9 @@ export default function Trip() {
                 </p>}
                 {trip.status === TripStatus.OrderPlacedAwaitingDelivery && <p>
                     Delivery is scheduled for <strong>{timestampFormat(trip.delivery)}</strong>.
+                </p>}
+                {trip.status === TripStatus.Complete && <p>
+                    The next shopping trip will be opened soon! Please ask Pal if you really need it open now.
                 </p>}
             </div>
         </article>

@@ -9,7 +9,7 @@ export default function RootPage() {
     const navigate = useNavigate()
     useEffect(() => {
         if (!userLoading && !user) {
-            navigate("/login")
+            navigate("/auth/login")
         }
     }, [user, userLoading, navigate])
 
