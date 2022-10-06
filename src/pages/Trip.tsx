@@ -2,16 +2,27 @@ import { formatTripStatus, TripStatus, useTripContext } from "../data/trips"
 import { currencyFormat, timestampFormat } from "../data/util"
 import { Link } from "react-router-dom"
 import { useStripeStatus } from "../data/stripe"
+import { useCallback } from "react"
+import { getAuth, signOut } from "firebase/auth"
 
 export default function Trip() {
     const trip = useTripContext()
     const status = useStripeStatus()
+
+    const logOut = useCallback(async () => {
+        const auth = getAuth()
+        await signOut(auth)
+    }, [])
 
     if (!trip) {
         return <></>
     }
 
     return <div className="container py-6 px-4">
+        <button className="button mb-4" onClick={logOut}>
+            Log out
+        </button>
+
         <h1 className="title">
             Current shopping trip
         </h1>
