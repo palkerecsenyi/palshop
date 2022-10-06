@@ -26,7 +26,7 @@ export const useCurrentTrip = () => {
         const firestore = getFirestore()
         const q = query(
             collection(firestore, "trips"),
-            orderBy("deadline", "desc"),
+            orderBy("itemsDeadline", "desc"),
             limit(1),
         )
         return onSnapshot(q, snapshot => {
