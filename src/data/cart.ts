@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react"
 import type { WithId } from "./types"
-import { collection, getFirestore, onSnapshot, query, where, addDoc, updateDoc, doc, deleteDoc } from "firebase/firestore"
+import {
+    collection,
+    getFirestore,
+    onSnapshot,
+    query,
+    where,
+    addDoc,
+    updateDoc,
+    doc,
+    deleteDoc,
+    Timestamp, orderBy,
+} from "firebase/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth } from "firebase/auth"
 
@@ -14,6 +25,7 @@ export interface CartItem {
     name: string
     quantity: number
     price: number
+    createdAt: Timestamp
 }
 
 export const useCart = (tripId?: string) => {
@@ -62,7 +74,10 @@ export const useCartItems = (tripId?: string, cartId?: string) => {
     useEffect(() => {
         if (!tripId || !cartId) return
         const firestore = getFirestore()
-        return onSnapshot(collection(firestore, "trips", tripId, "carts", cartId, "items"), snapshot => {
+        return onSnapshot(query(
+            collection(firestore, "trips", tripId, "carts", cartId, "items"),
+            orderBy("createdAt", "desc")
+        ), snapshot => {
             setItems(snapshot.docs.map(e => ({
                 ...e.data() as CartItem,
                 id: e.id,

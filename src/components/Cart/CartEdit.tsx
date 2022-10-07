@@ -2,6 +2,7 @@ import { addToCart, CartItem, updateCartItem } from "../../data/cart"
 import { FormEvent, useCallback, useState } from "react"
 import Input from "../Input"
 import { WithId } from "../../data/types"
+import { Timestamp } from "firebase/firestore"
 
 type props = {
     initialItem?: WithId<CartItem>
@@ -31,6 +32,7 @@ export default function CartEdit(
                 name,
                 quantity,
                 price: parsedPrice,
+                createdAt: Timestamp.now(),
             })
         } else {
             await updateCartItem(tripId, cartId, initialItem.id, {
