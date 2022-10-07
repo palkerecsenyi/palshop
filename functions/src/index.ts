@@ -1,8 +1,8 @@
 import * as functions from "firebase-functions";
 import { initializeApp } from "firebase-admin/app"
 import { getFirestore } from "firebase-admin/firestore"
-import { getAuth } from "firebase-admin/auth"
 import Stripe from "stripe"
+import { verifyRequest } from "./util"
 
 const stripe = new Stripe(functions.config().stripe.key, {
     apiVersion: '2022-08-01',
@@ -47,25 +47,7 @@ type getDetailsRequest = {
 }
 export const getDetails = regionalFunctions.https
     .onCall(async (data: Partial<getDetailsRequest>, context) => {
-        if (context.app === undefined) {
-            throw new functions.https.HttpsError(
-                'failed-precondition',
-                'The function must be called from an App Check verified app'
-            )
-        }
-
-        if (!data.token) {
-            throw new functions.https.HttpsError('permission-denied', 'Token must be provided')
-        }
-
-        const auth = getAuth()
-        let userId: string
-        try {
-            const user = await auth.verifyIdToken(data.token)
-            userId = user.uid
-        } catch (e) {
-            throw new functions.https.HttpsError('permission-denied', 'Invalid token')
-        }
+        const userId = await verifyRequest(data, context)
 
         const firestore = getFirestore()
         const customer = await firestore.collection('customers').doc(userId).get()
@@ -89,5 +71,50 @@ export const getDetails = regionalFunctions.https
         return {
             balance,
             email: stripeCustomer.email,
+        }
+    })
+
+type getCartInvoiceStatusRequest = {
+    token: string
+    cartId: string
+    tripId: string
+}
+export const getCartInvoiceStatus = regionalFunctions.https
+    .onCall(async (data: Partial<getCartInvoiceStatusRequest>, context) => {
+        const userId = await verifyRequest(data, context)
+        if (!data.cartId || !data.tripId) {
+            throw new functions.https.HttpsError('invalid-argument', 'Missing cart/trip ID')
+        }
+
+        const firestore = getFirestore()
+        const cart = await firestore.collection('trips')
+            .doc(data.tripId)
+            .collection('carts')
+            .doc(data.cartId)
+            .get()
+
+        const cartData = cart.data() as Partial<{
+            invoiceId: string,
+            owner: string
+        }>
+
+        if (!cartData || !cartData.invoiceId || !cartData.owner) {
+            throw new functions.https.HttpsError('failed-precondition', 'Cart does not exist or has no invoice')
+        }
+
+        if (cartData.owner !== userId) {
+            throw new functions.https.HttpsError('permission-denied', 'User does not own this cart')
+        }
+
+        const invoice = await stripe.invoices.retrieve(cartData.invoiceId)
+        if (invoice.status === 'draft') {
+            throw new functions.https.HttpsError('failed-precondition', 'Invoice is not finalized')
+        }
+
+        return {
+            isPaid: invoice.status === 'paid',
+            total: invoice.amount_due,
+            number: invoice.number,
+            link: invoice.hosted_invoice_url,
         }
     })

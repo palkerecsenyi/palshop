@@ -5,6 +5,8 @@ import RootPage from "./RootPage"
 import ResetPassword from "./pages/ResetPassword"
 import Trip from "./pages/Trip"
 import Cart from "./pages/Cart"
+import TripHistory from "./pages/TripHistory"
+import TripHistoryDetails from "./pages/TripHistoryDetails"
 
 const router = createBrowserRouter([
     {
@@ -18,6 +20,14 @@ const router = createBrowserRouter([
             {
                 path: "cart",
                 element: <Cart />,
+            },
+            {
+                path: "history",
+                element: <TripHistory />,
+            },
+            {
+                path: "history/:id",
+                element: <TripHistoryDetails />,
             }
         ]
     },

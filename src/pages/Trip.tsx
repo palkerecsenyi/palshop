@@ -76,11 +76,19 @@ export default function Trip() {
             </div>
         </article>
 
-        {trip.status === TripStatus.AcceptingOrders && <Link
-            className="button is-primary"
-            to="/cart"
-        >
-            Edit my cart
-        </Link>}
+        <div className="buttons">
+            {trip.status === TripStatus.AcceptingOrders && <Link
+                className="button is-primary"
+                to="/cart"
+            >
+                Edit my cart
+            </Link>}
+            <Link
+                className="button"
+                to="/history"
+            >
+                Trip history
+            </Link>
+        </div>
     </div>
 }

@@ -1,4 +1,15 @@
-import {Timestamp, getFirestore, onSnapshot, query, collection, orderBy, limit} from "firebase/firestore"
+import {
+    Timestamp,
+    getFirestore,
+    onSnapshot,
+    query,
+    collection,
+    orderBy,
+    limit,
+    getDocs,
+    getDoc,
+    where, doc,
+} from "firebase/firestore"
 import { createContext, useContext, useEffect, useState } from "react"
 import type { WithId } from "./types"
 
@@ -47,6 +58,52 @@ export const useCurrentTrip = () => {
 }
 
 export const useTripContext = () => useContext(TripContext)
+
+export const usePastTrips = () => {
+    const [trips, setTrips] = useState<WithId<Trip>[]>([])
+    const [loading, setLoading] = useState(true)
+    useEffect(() => {
+        (async () => {
+            const firestore = getFirestore()
+            const response = await getDocs(query(
+                collection(firestore, "trips"),
+                where("itemsDeadline", "<", Timestamp.now()),
+                orderBy("itemsDeadline", "desc"),
+            ))
+            const t = response.docs.map(e => ({
+                ...e.data() as Trip,
+                id: e.id,
+            }))
+            setTrips(t)
+            setLoading(false)
+        })()
+    }, [])
+
+    return [trips, loading] as const
+}
+
+export const usePastTrip = (id?: string) => {
+    const [trip, setTrip] = useState<WithId<Trip>>()
+    const [loading, setLoading] = useState(true)
+    useEffect(() => {
+        if (!id) return
+        (async () => {
+            const firestore = getFirestore()
+            const response = await getDoc(doc(firestore, "trips", id))
+            if (response.exists()) {
+                setTrip({
+                    ...response.data() as Trip,
+                    id: response.id,
+                })
+            } else {
+                setTrip(undefined)
+            }
+
+            setLoading(false)
+        })()
+    }, [id])
+    return [trip, loading] as const
+}
 
 export const formatTripStatus = (status: TripStatus) => {
     switch (status) {

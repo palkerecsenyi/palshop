@@ -26,3 +26,40 @@ export const useStripeStatus = () => {
 
     return status
 }
+
+interface StripeInvoiceData {
+    isPaid: boolean
+    total: number
+    number: string
+    link: string
+}
+
+export const useInvoiceData = (tripId?: string, cartId?: string) => {
+    const [data, setData] = useState<StripeInvoiceData>()
+    const [user] = useAuthState(getAuth())
+
+    useEffect(() => {
+        if (!user || !tripId || !cartId) return
+        (async () => {
+            const token = await getIdToken(user)
+            const functions = getFunctions(undefined, "europe-west2")
+            const func = await httpsCallable<{ token: string, tripId: string, cartId: string }, StripeInvoiceData>(
+                functions,
+                "getCartInvoiceStatus",
+            )
+
+            try {
+                const response = await func({
+                    token,
+                    tripId,
+                    cartId
+                })
+                setData(response.data)
+            } catch (e) {
+                setData(undefined)
+            }
+        })()
+    }, [tripId, cartId, user])
+
+    return data
+}
