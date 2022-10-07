@@ -62,16 +62,16 @@ export default function TripHistoryDetails() {
                     <p>
                         The total invoiced amount (including fees) is <strong>{currencyFormat(invoiceData.total)}</strong>.
                     </p>
-                    {!invoiceData.isPaid && <p>
+                    <p>
                         <a
                             href={invoiceData.link}
                             target="_blank"
                             className="button mt-2"
                             rel="noreferrer"
                         >
-                            Pay invoice
+                            {invoiceData.isPaid ? 'View' : 'Pay'} invoice
                         </a>
-                    </p>}
+                    </p>
                 </div>
             </article>}
 
