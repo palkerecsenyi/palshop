@@ -112,7 +112,7 @@ export const getCartInvoiceStatus = regionalFunctions.https
         }
 
         return {
-            isPaid: invoice.status === 'paid',
+            isPaid: invoice.status !== 'open',
             total: invoice.amount_due,
             number: invoice.number,
             link: invoice.hosted_invoice_url,

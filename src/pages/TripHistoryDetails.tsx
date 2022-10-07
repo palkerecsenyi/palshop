@@ -57,7 +57,7 @@ export default function TripHistoryDetails() {
                 </div>
                 <div className="message-body">
                     <p>
-                        Your invoice for this trip is <strong>{invoiceData.isPaid ? 'paid :)' : 'NOT paid'}</strong>.
+                        Your invoice for this trip is <strong>{invoiceData.isPaid ? 'paid (or otherwise complete)' : 'NOT paid'}</strong>.
                     </p>
                     <p>
                         The total invoiced amount (including fees) is <strong>{currencyFormat(invoiceData.total)}</strong>.
