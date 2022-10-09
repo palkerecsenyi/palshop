@@ -118,3 +118,16 @@ export const getCartInvoiceStatus = regionalFunctions.https
             link: invoice.hosted_invoice_url,
         }
     })
+
+type getCartRequest = {
+    token: string
+}
+export const getCartLogin = regionalFunctions.https
+    .onCall(async (data: Partial<getCartRequest>, context) => {
+        await verifyRequest(data, context)
+
+        return {
+            email: functions.config().cart.email,
+            password: functions.config().cart.password,
+        }
+    })
