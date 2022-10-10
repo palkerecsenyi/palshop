@@ -49,7 +49,7 @@ export default function CartEdit(
         <form onSubmit={submit}>
             <Input
                 label="Item name"
-                help="Please try to be specific to reduce confusion between similar items."
+                help="Please copy the exact item name from the ASDA website."
                 placeholder="Enter a description of the item..."
                 type="text"
                 value={name}
