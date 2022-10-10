@@ -78,10 +78,6 @@ export default function CartEdit(
                 required
             />
 
-            <p className="mb-2">
-                Make sure to add this item to the shared ASDA cart too.
-            </p>
-
             <div className="buttons">
                 <button type="submit" disabled={loading} className="button is-primary">
                     Save

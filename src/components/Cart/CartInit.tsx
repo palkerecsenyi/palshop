@@ -3,7 +3,6 @@ import { useTripContext } from "../../data/trips"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth } from "firebase/auth"
 import { createCart } from "../../data/cart"
-import CartLogin from "../CartLogin"
 
 export default function CartInit() {
     const [loading, setLoading] = useState(false)
@@ -29,24 +28,10 @@ export default function CartInit() {
 
             <ol>
                 <li>
-                    Place an item into the <strong>
-                        <a
-                            href="https://groceries.asda.com/trolley"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            shared ASDA cart.
-                        </a>
-                    </strong>
-                    <ul className="mt-0">
-                        <li>
-                            To log in to ASDA, use these credentials:
-                        </li>
-                        <CartLogin />
-                    </ul>
+                    Find an item on the ASDA website. You don't need to be logged in. Copy the item's name exactly.
                 </li>
                 <li>
-                    Add the item's name (try to be specific), your quantity, and <strong>the total price</strong> to your
+                    Add the item's exact name, your quantity, and <strong>the total price</strong> to your
                     cart on PalShop (this website).
                     Don't add the price of each individual item, just the final price you're paying. This makes it
                     easier to account for offers and "2 for 1" discounts, etc.

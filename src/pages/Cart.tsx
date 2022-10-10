@@ -7,7 +7,6 @@ import { useState } from "react"
 import CartEdit from "../components/Cart/CartEdit"
 import { currencyFormat } from "../data/util"
 import CartItemComponent from "../components/Cart/CartItem"
-import CartLogin from "../components/CartLogin"
 
 export default function Cart() {
     const trip = useTripContext()
@@ -48,13 +47,6 @@ export default function Cart() {
         {!cart && !cartLoading && <CartInit />}
 
         {cart && <>
-            <p className="mb-2">
-                Please make sure to add all items to the shared ASDA cart as well as this website. This lets us keep
-                track of who's ordered what. To sign into ASDA, use these credentials:
-            </p>
-
-            <CartLogin />
-
             <p className="my-4 is-size-4">
                 Your total: <strong>{currencyFormat(cart?.total)}</strong>
             </p>
