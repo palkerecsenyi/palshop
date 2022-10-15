@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
-import { getAuth, getIdToken } from "firebase/auth"
+import {getAuth, getIdToken} from "firebase/auth"
 import { getFunctions, httpsCallable } from "firebase/functions"
 
 interface StripeStatus {
@@ -43,7 +43,7 @@ export const useInvoiceData = (tripId?: string, cartId?: string) => {
         (async () => {
             const token = await getIdToken(user)
             const functions = getFunctions(undefined, "europe-west2")
-            const func = await httpsCallable<{ token: string, tripId: string, cartId: string }, StripeInvoiceData>(
+            const func = httpsCallable<{ token: string, tripId: string, cartId: string }, StripeInvoiceData>(
                 functions,
                 "getCartInvoiceStatus",
             )

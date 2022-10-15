@@ -1,4 +1,3 @@
-import React from 'react';
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Login from "./pages/Login"
 import RootPage from "./RootPage"
@@ -28,7 +27,7 @@ const router = createBrowserRouter([
             {
                 path: "history/:id",
                 element: <TripHistoryDetails />,
-            }
+            },
         ]
     },
     {
