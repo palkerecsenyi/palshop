@@ -91,7 +91,7 @@ export default function Cart() {
             </>}
 
             {cartItems.length === 0 && <CartEmpty />}
-            {!adding && <button className="button" onClick={() => setAdding(true)}>
+            {!adding && <button className="button is-primary" onClick={() => setAdding(true)}>
                 Add item
             </button>}
             {adding && <CartEdit

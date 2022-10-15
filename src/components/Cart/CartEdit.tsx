@@ -74,7 +74,7 @@ export default function CartEdit(
     const priceHelpText = useMemo(() => {
         let baseText = "Use the total price (not per unit) to account for multi-buy offers (etc)."
         if (showSharePrompt) {
-            baseText += " This is the price you pay (exclude the price the other person is paying)"
+            baseText += " This is the price you pay (exclude the price the other person is paying)."
         }
         return baseText
     }, [showSharePrompt])
