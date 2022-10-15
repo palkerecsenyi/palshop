@@ -6,18 +6,27 @@ type props = DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputE
     leftIcon?: ReactNode
 }
 export default function Input({label, help, leftIcon, ...inputProps}: props) {
+    const isCheckbox = inputProps.type === "checkbox";
     return <div className="field">
-        <label className="label">
-            {label}
-            <div className={`control ${leftIcon ? "has-icons-left" : ""}`}>
+        <label className={isCheckbox ? 'checkbox' : 'label'}>
+            {isCheckbox ? '' : label}
+            {!isCheckbox ? 
+                <div className={`control ${leftIcon ? "has-icons-left" : ""}`}>
+                    <input
+                        className="input"
+                        {...inputProps}
+                    />
+                    {leftIcon && <span className="icon is-small is-left">
+                        {leftIcon}
+                    </span>}
+                </div>
+                :
                 <input
-                    className="input"
+                    className="mr-2"
                     {...inputProps}
                 />
-                {leftIcon && <span className="icon is-small is-left">
-                    {leftIcon}
-                </span>}
-            </div>
+            }
+            {isCheckbox ? label : ''}
         </label>
         {help && <p className="help">
             {help}

@@ -10,10 +10,11 @@ import {
     updateDoc,
     doc,
     deleteDoc,
-    Timestamp, orderBy,
+    Timestamp, orderBy, collectionGroup,
 } from "firebase/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
-import { getAuth } from "firebase/auth"
+import { getAuth, getIdToken } from "firebase/auth"
+import {getFunctions, httpsCallable} from "firebase/functions"
 
 export interface Cart {
     trip: string
@@ -26,6 +27,12 @@ export interface CartItem {
     quantity: number
     price: number
     createdAt: Timestamp
+    shared?: {
+        otherUserId: string
+        otherUserPays: number
+    }
+    // for collectionGroup queries
+    tripId: string
 }
 
 export const useCart = (tripId?: string) => {
@@ -101,3 +108,50 @@ export const deleteCartItem = async (tripId: string, cartId: string, itemId: str
     const firestore = getFirestore()
     await deleteDoc(doc(firestore, "trips", tripId, "carts", cartId, "items", itemId))
 }
+
+export interface OtherUserDetail {
+    id: string
+    email: string
+}
+export const useOtherUsers = () => {
+    const [otherUsers, setOtherUsers] = useState<OtherUserDetail[]>([])
+    const [user] = useAuthState(getAuth())
+    useEffect(() => {
+        if (!user) return
+        (async () => {
+            const functions = getFunctions(undefined, "europe-west2")
+            const callable = httpsCallable<{token: string}, OtherUserDetail[]>(functions, "getOtherUserList")
+            const token = await getIdToken(user)
+            const response = await callable({
+                token,
+            })
+
+            setOtherUsers(response.data)
+        })()
+    }, [user])
+
+    return otherUsers
+}
+
+export const useSharedWithMe = (tripId?: string) => {
+    const [items, setItems] = useState<WithId<CartItem>[]>([])
+    const [user] = useAuthState(getAuth())
+
+    useEffect(() => {
+        if (!tripId || !user) return
+        const firestore = getFirestore()
+        return onSnapshot(query(
+            collectionGroup(firestore, "items"),
+            where("tripId", "==", tripId),
+            where("shared.otherUserId", '==', user.uid)
+        ), (snapshot) => {
+            setItems(snapshot.docs.map(e => ({
+                ...e.data() as CartItem,
+                id: e.id,
+            })))
+        })
+    }, [tripId, user?.uid])
+
+    return items
+}
+

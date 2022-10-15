@@ -1,4 +1,4 @@
-import { CartItem, deleteCartItem } from "../../data/cart"
+import { CartItem, deleteCartItem, OtherUserDetail } from "../../data/cart"
 import { currencyFormat } from "../../data/util"
 import { useCallback, useState } from "react"
 import CartEdit from "./CartEdit"
@@ -8,9 +8,11 @@ type props = {
     item: WithId<CartItem>
     tripId: string
     cartId: string
+    otherUsers: OtherUserDetail[]
+    readOnly?: boolean
 }
 export default function CartItemComponent(
-    {item, tripId, cartId}: props
+    {item, tripId, cartId, otherUsers, readOnly}: props
 ) {
     const [editing, setEditing] = useState(false)
 
@@ -25,6 +27,7 @@ export default function CartItemComponent(
                 tripId={tripId}
                 cartId={cartId}
                 initialItem={item}
+                otherUsers={otherUsers}
             />
         </div>
     }
@@ -37,13 +40,15 @@ export default function CartItemComponent(
             {currencyFormat(item.price)}
         </p>
 
-        <div className="buttons mt-2">
-            <button className="button" onClick={() => setEditing(true)}>
-                Edit
-            </button>
-            <button className="button" onClick={deleteMe}>
-                Delete
-            </button>
-        </div>
+        {!readOnly &&
+            <div className="buttons mt-2">
+                <button className="button" onClick={() => setEditing(true)}>
+                    Edit
+                </button>
+                <button className="button" onClick={deleteMe}>
+                    Delete
+                </button>
+            </div>
+        }
     </div>
 }

@@ -3,6 +3,7 @@ import { initializeApp } from "firebase-admin/app"
 import { getFirestore } from "firebase-admin/firestore"
 import Stripe from "stripe"
 import { verifyRequest } from "./util"
+import {getAuth} from "firebase-admin/auth";
 
 const stripe = new Stripe(functions.config().stripe.key, {
     apiVersion: '2022-08-01',
@@ -117,4 +118,23 @@ export const getCartInvoiceStatus = regionalFunctions.https
             number: invoice.number,
             link: invoice.hosted_invoice_url,
         }
+    })
+
+type getOtherUserListRequest = {
+    token: string
+} 
+export const getOtherUserList = regionalFunctions.https
+    .onCall(async (data: Partial<getOtherUserListRequest>, context) => {
+        const userId = await verifyRequest(data, context)
+        const auth = getAuth()
+        const users = await auth.listUsers()
+
+        const usersWithoutCurrent = users.users.filter(e => {
+            return e.uid !== userId
+        })
+
+        return usersWithoutCurrent.map(e => ({
+            email: e.email,
+            id: e.uid,
+        }))
     })
