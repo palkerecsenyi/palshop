@@ -126,9 +126,9 @@ export default function CartEdit(
                     label="Person to share price with"
                     value={shareDetails.otherUserId}
                     onChange={(e) => setShareDetails({...shareDetails, otherUserId: e.target.value})}
-                    options={otherUsers.map(e => [e.id, e.email])}
+                    options={otherUsers.map(e => [e.id, e.name])}
                 />
-                <Input 
+                <Input
                     label="Amount other person should pay"
                     help="The total final amount the other person is contributing to this item. Same as the other price field, enter the total (not per-unit) price."
                     type="text"

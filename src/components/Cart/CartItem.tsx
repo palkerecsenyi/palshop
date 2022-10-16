@@ -23,7 +23,7 @@ export default function CartItemComponent(
         const { shared } = item
         if (!shared) return undefined
         const otherUser = otherUsers.find(e => e.id === shared.otherUserId)
-        return otherUser?.email
+        return otherUser?.name
     }, [otherUsers, item])
 
     const deleteMe = useCallback(async () => {

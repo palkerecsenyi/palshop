@@ -111,7 +111,7 @@ export const deleteCartItem = async (tripId: string, cartId: string, itemId: str
 
 export interface OtherUserDetail {
     id: string
-    email: string
+    name: string
 }
 export const useOtherUsers = () => {
     const [otherUsers, setOtherUsers] = useState<OtherUserDetail[]>([])

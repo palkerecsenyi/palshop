@@ -122,7 +122,7 @@ export const getCartInvoiceStatus = regionalFunctions.https
 
 type getOtherUserListRequest = {
     token: string
-} 
+}
 export const getOtherUserList = regionalFunctions.https
     .onCall(async (data: Partial<getOtherUserListRequest>, context) => {
         const userId = await verifyRequest(data, context)
@@ -134,7 +134,7 @@ export const getOtherUserList = regionalFunctions.https
         })
 
         return usersWithoutCurrent.map(e => ({
-            email: e.email,
+            name: e.displayName,
             id: e.uid,
         }))
     })
