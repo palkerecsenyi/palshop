@@ -4,6 +4,7 @@ import Input from "../Input"
 import { WithId } from "../../data/types"
 import { Timestamp, deleteField } from "firebase/firestore"
 import Select from "../Select"
+import { ShopMetadata } from "../../data/shops"
 
 type props = {
     initialItem?: WithId<CartItem>
@@ -11,9 +12,10 @@ type props = {
     tripId: string
     cartId: string
     otherUsers: OtherUserDetail[]
+    shops: WithId<ShopMetadata>[]
 }
 export default function CartEdit(
-    {initialItem, onDismiss, tripId, cartId, otherUsers}: props
+    {initialItem, onDismiss, tripId, cartId, shops, otherUsers}: props
 ) {
     const [name, setName] = useState(initialItem?.name || "")
     const [quantity, setQuantity] = useState(initialItem?.quantity || 0)
@@ -26,6 +28,7 @@ export default function CartEdit(
         otherUserId: "",
         otherUserPays: "0",
     })
+    const [shop, setShop] = useState(initialItem?.shopId || "")
 
     const [loading, setLoading] = useState(false)
 
@@ -40,6 +43,7 @@ export default function CartEdit(
             name,
             quantity,
             price: parsedPrice,
+            shopId: shop,
         }
 
         if (showSharePrompt && shareDetails.otherUserId !== "" && shareDetails.otherUserPays !== "0") {
@@ -69,7 +73,7 @@ export default function CartEdit(
         }
         onDismiss()
         setLoading(false)
-    }, [initialItem, onDismiss, tripId, cartId, name, quantity, price, shareDetails.otherUserId, shareDetails.otherUserPays, showSharePrompt])
+    }, [initialItem, onDismiss, tripId, cartId, name, quantity, price, shop, shareDetails.otherUserId, shareDetails.otherUserPays, showSharePrompt])
 
     const priceHelpText = useMemo(() => {
         let baseText = "Use the total price (not per unit) to account for multi-buy offers (etc)."
@@ -79,11 +83,15 @@ export default function CartEdit(
         return baseText
     }, [showSharePrompt])
 
+    const selectedShop = useMemo(() => {
+        return shops.find(e => e.id === shop)
+    }, [shops, shop])
+
     return <div className="box">
         <form onSubmit={submit}>
             <Input
                 label="Item name"
-                help="Please copy the exact item name from the ASDA website."
+                help={`Please copy the exact item name from the ${selectedShop?.name || 'shop'} website.`}
                 placeholder="Enter a description of the item..."
                 type="text"
                 value={name}
@@ -110,6 +118,14 @@ export default function CartEdit(
                 onChange={e => setPrice(e.target.value)}
                 disabled={loading}
                 required
+            />
+
+            <Select
+                label="Which shop is this item from?"
+                options={shops.map(e => [e.id, e.name])}
+                help="You'll get charged the respective delivery fee for each shop even for a single item."
+                value={shop}
+                onChange={(e) => setShop(e.target.value)}
             />
 
             <Input

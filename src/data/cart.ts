@@ -33,6 +33,7 @@ export interface CartItem {
     }
     // for collectionGroup queries
     tripId: string
+    shopId: string
 }
 
 export const useCart = (tripId?: string) => {

@@ -38,7 +38,7 @@ export default function Trip() {
             Your invoices will be emailed to <strong>{status.email}</strong>.
         </p>}
 
-        {status && status.balance !== 0 && <article className="message mt-4 is-success">
+        {status && status.balance !== 0 && <article className={`message mt-4 ${status.balance > 0 ? 'is-success' : 'is-danger'}`}>
             <div className="message-body">
                 <p>
                     <strong>You have a balance!</strong>
@@ -51,8 +51,12 @@ export default function Trip() {
                     This might be because an item in a previous order got substituted for a cheaper alternative.
                 </p>}
                 {status.balance < 0 && <p>
-                    This might be because you were accidentally missing a charge in your last order.
+                    This might be because you were accidentally missing a charge in your last order or because Pal
+                    added a debit to your account for some reason.
                 </p>}
+                <p>
+                    If this balance doesn't make sense, please ask Pal well before the order deadline. He makes mistakes sometimes.
+                </p>
             </div>
         </article>}
 

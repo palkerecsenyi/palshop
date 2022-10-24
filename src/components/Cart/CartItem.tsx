@@ -5,16 +5,18 @@ import CartEdit from "./CartEdit"
 import { WithId } from "../../data/types"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth } from "firebase/auth"
+import { ShopMetadata } from "../../data/shops"
 
 type props = {
     item: WithId<CartItem>
     tripId: string
     cartId: string
     otherUsers: OtherUserDetail[]
+    shops: WithId<ShopMetadata>[]
     readOnly?: boolean
 }
 export default function CartItemComponent(
-    {item, tripId, cartId, otherUsers, readOnly}: props
+    {item, tripId, cartId, otherUsers, shops, readOnly}: props
 ) {
     const [editing, setEditing] = useState(false)
     const [user] = useAuthState(getAuth())
@@ -30,6 +32,10 @@ export default function CartItemComponent(
         await deleteCartItem(tripId, cartId, item.id)
     }, [item.id, tripId, cartId])
 
+    const shop = useMemo(() => {
+        return shops.find(e => e.id === item.shopId)
+    }, [item.shopId, shops])
+
     if (editing) {
         return <div className="my-4">
             <CartEdit
@@ -38,13 +44,17 @@ export default function CartItemComponent(
                 cartId={cartId}
                 initialItem={item}
                 otherUsers={otherUsers}
+                shops={shops}
             />
         </div>
     }
 
     return <div className="box my-4">
         <p className="is-size-5">
-            {item.name} <span className="has-text-grey">({item.quantity})</span>
+            {item.name}
+            <span className="has-text-grey">
+                &nbsp;({item.quantity}) from {shop?.name}
+            </span>
         </p>
         <p>
             {currencyFormat(item.price)}

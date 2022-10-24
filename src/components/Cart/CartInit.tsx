@@ -3,6 +3,7 @@ import { useTripContext } from "../../data/trips"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth } from "firebase/auth"
 import { createCart } from "../../data/cart"
+import { Link } from "react-router-dom"
 
 export default function CartInit() {
     const [loading, setLoading] = useState(false)
@@ -28,7 +29,12 @@ export default function CartInit() {
 
             <ol>
                 <li>
-                    Find an item on the ASDA website. You don't need to be logged in. Copy the item's name exactly.
+                    You can buy any items from both ASDA and Sainsbury's in the same order. Please note, if you buy
+                    a single item from either shop, you'll be charged the full delivery fee for that shop.
+                    See <Link to="/fees">here</Link> for current fees.
+                </li>
+                <li>
+                    Find an item on the shop website. You don't need to be logged in. Copy the item's name exactly.
                 </li>
                 <li>
                     Add the item's exact name, your quantity, and <strong>the total price</strong> to your
@@ -38,7 +44,7 @@ export default function CartInit() {
                 </li>
                 <li>
                     Once you've added your items, you don't need to do anything. At the deadline listed on the home
-                    page, your cart will get locked and the ASDA order will be placed, usually for <strong>next-day delivery</strong>.
+                    page, your cart will get locked and the order will be placed, usually for <strong>next-day delivery</strong>.
                     The expected delivery time will be shown too.
                 </li>
                 <li>

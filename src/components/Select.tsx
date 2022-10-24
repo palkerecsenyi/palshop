@@ -20,6 +20,9 @@ export default function Select({ label, help, options, ...selectProps }: props) 
                 </option>)}
             </select>
         </div>
-        
+
+        {help && <p className="help">
+            {help}
+        </p>}
     </div>
 }

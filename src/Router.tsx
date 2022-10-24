@@ -6,6 +6,7 @@ import Trip from "./pages/Trip"
 import Cart from "./pages/Cart"
 import TripHistory from "./pages/TripHistory"
 import TripHistoryDetails from "./pages/TripHistoryDetails"
+import ShopFees from "./pages/ShopFees"
 
 const router = createBrowserRouter([
     {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
                 path: "history/:id",
                 element: <TripHistoryDetails />,
             },
+            {
+                path: "fees",
+                element: <ShopFees />,
+            }
         ]
     },
     {

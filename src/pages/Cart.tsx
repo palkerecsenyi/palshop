@@ -7,12 +7,14 @@ import { useMemo, useState } from "react"
 import CartEdit from "../components/Cart/CartEdit"
 import { currencyFormat } from "../data/util"
 import CartItemComponent from "../components/Cart/CartItem"
+import { useShopMetadata } from "../data/shops"
 
 export default function Cart() {
     const trip = useTripContext()
     const [cart, cartLoading] = useCart(trip?.id)
     const cartItems = useCartItems(trip?.id, cart?.id)
     const sharedCartItems = useSharedWithMe(trip?.id)
+    const shops = useShopMetadata()
 
     const sharedCartItemsTotal = useMemo(() => {
         return sharedCartItems.reduce((total, item) => {
@@ -73,7 +75,7 @@ export default function Cart() {
                     The prices shown are how much you're paying.
                 </p>
 
-                {sharedCartItems.map(item => <CartItemComponent 
+                {sharedCartItems.map(item => <CartItemComponent
                     item={{
                         ...item,
                         price: item.shared!.otherUserPays,
@@ -82,9 +84,10 @@ export default function Cart() {
                     tripId={trip.id}
                     cartId={cart.id}
                     otherUsers={otherUsers}
+                    shops={shops}
                     readOnly
                 />)}
-                
+
                 <p className="is-size-4 mb-4 mt-5">
                     Your items
                 </p>
@@ -99,6 +102,7 @@ export default function Cart() {
                 tripId={trip.id}
                 cartId={cart.id}
                 otherUsers={otherUsers}
+                shops={shops}
             />}
 
 
@@ -108,6 +112,7 @@ export default function Cart() {
                 tripId={trip.id}
                 cartId={cart.id}
                 otherUsers={otherUsers}
+                shops={shops}
             />)}
         </>}
     </div>
