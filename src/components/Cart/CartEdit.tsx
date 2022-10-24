@@ -34,7 +34,7 @@ export default function CartEdit(
 
     const submit = useCallback(async (e: FormEvent) => {
         e.preventDefault()
-        if (!name || !quantity || !price) return
+        if (!name || !quantity || !price || !shop) return
 
         const parsedPrice = parseFloat(price) * 100
         if (isNaN(parsedPrice)) return
