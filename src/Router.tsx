@@ -7,6 +7,7 @@ import Cart from "./pages/Cart"
 import TripHistory from "./pages/TripHistory"
 import TripHistoryDetails from "./pages/TripHistoryDetails"
 import ShopFees from "./pages/ShopFees"
+import About from "./pages/About"
 
 const router = createBrowserRouter([
     {
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
     {
         path: "auth/reset",
         element: <ResetPassword />
+    },
+    {
+        path: "about",
+        element: <About />,
     }
 ])
 

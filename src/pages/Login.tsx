@@ -55,6 +55,9 @@ export default function Login() {
             <p className="has-text-grey mt-2">
                 Forgot your password? <Link to="/auth/reset">Reset it here.</Link>
             </p>
+            <p className="has-text-grey">
+                Read more <Link to="/about">about PalShop</Link>.
+            </p>
         </form>
     </ActionContainer>
 }

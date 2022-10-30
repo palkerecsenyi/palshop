@@ -94,5 +94,11 @@ export default function Trip() {
                 Trip history
             </Link>
         </div>
+
+        <p>
+            <Link to="/about">
+                About PalShop
+            </Link>
+        </p>
     </div>
 }
