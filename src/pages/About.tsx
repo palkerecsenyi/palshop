@@ -34,7 +34,7 @@ export default function About() {
                 not on this website.
             </p>
             <p>
-                All transactions will be made in <strong>£/GBP</strong>.
+                All transactions will be made in <strong>£GBP</strong>.
             </p>
 
             <h2>
