@@ -4,7 +4,7 @@ type props = DetailedHTMLProps<SelectHTMLAttributes<HTMLSelectElement>, HTMLSele
     label: string
     help?: string
     // [id, label]
-    options: [string, string][]
+    options: (readonly [string, string])[]
 }
 
 export default function Select({ label, help, options, ...selectProps }: props) {

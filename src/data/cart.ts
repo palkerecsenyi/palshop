@@ -10,7 +10,7 @@ import {
     updateDoc,
     doc,
     deleteDoc,
-    Timestamp, orderBy, collectionGroup,
+    Timestamp, orderBy, collectionGroup, getDocs, writeBatch,
 } from "firebase/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth, getIdToken } from "firebase/auth"
@@ -156,3 +156,61 @@ export const useSharedWithMe = (tripId?: string) => {
     return items
 }
 
+export const copyCart = async (
+    fromTripId: string,
+    toTripId: string,
+    toCartId: string,
+    userId: string
+) => {
+    const firestore = getFirestore()
+    const fromTripCartResponse = await getDocs(query(
+        collection(firestore, "trips", fromTripId, "carts"),
+        where("owner", "==", userId),
+    ))
+    const fromTripCarts = fromTripCartResponse.docs
+    if (fromTripCarts.length === 0) {
+        throw new Error("User did not initialise a cart for this trip.")
+    }
+
+    const fromTripCart = {
+        ...fromTripCarts[0].data() as Cart,
+        id: fromTripCarts[0].id,
+    }
+    const fromTripItemsResponse = await getDocs(
+        collection(firestore, "trips", fromTripId, "carts", fromTripCart.id, "items"),
+    )
+
+    const fromTripItems = fromTripItemsResponse.docs.map(doc => ({
+        ...doc.data() as CartItem,
+        id: doc.id,
+    }))
+
+    const batch = writeBatch(firestore)
+    for (const item of fromTripItems) {
+        const newItemRef = await doc(collection(
+            firestore,
+            "trips",
+            toTripId,
+            "carts",
+            toCartId,
+            "items",
+        ))
+
+        const newItemData: CartItem = {
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            createdAt: Timestamp.now(),
+            tripId: toTripId,
+            shopId: item.shopId,
+        }
+
+        if (item.shared) {
+            newItemData.shared = item.shared
+        }
+
+        batch.set(newItemRef, newItemData)
+    }
+
+    await batch.commit()
+}

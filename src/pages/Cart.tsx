@@ -8,6 +8,7 @@ import CartEdit from "../components/Cart/CartEdit"
 import { currencyFormat } from "../data/util"
 import CartItemComponent from "../components/Cart/CartItem"
 import { useShopMetadata } from "../data/shops"
+import CartCopyModal from "../components/Cart/CartCopyModal"
 
 export default function Cart() {
     const trip = useTripContext()
@@ -23,6 +24,7 @@ export default function Cart() {
     }, [sharedCartItems])
 
     const [adding, setAdding] = useState(false)
+    const [showCopyModal, setShowCopyModal] = useState(false)
 
     const otherUsers = useOtherUsers()
 
@@ -94,9 +96,26 @@ export default function Cart() {
             </>}
 
             {cartItems.length === 0 && <CartEmpty />}
-            {!adding && <button className="button is-primary" onClick={() => setAdding(true)}>
-                Add item
-            </button>}
+
+            <div className="field is-grouped">
+               {!adding && <p className="control">
+                   <button className="button is-primary" onClick={() => setAdding(true)}>
+                       Add item
+                   </button>
+               </p>}
+               <p className="control">
+                   <button className="button" onClick={() => setShowCopyModal(true)}>
+                       Copy cart
+                   </button>
+               </p>
+            </div>
+
+            {showCopyModal && <CartCopyModal
+                tripId={trip.id}
+                cartId={cart.id}
+                close={() => setShowCopyModal(false)}
+            />}
+
             {adding && <CartEdit
                 onDismiss={() => setAdding(false)}
                 tripId={trip.id}
