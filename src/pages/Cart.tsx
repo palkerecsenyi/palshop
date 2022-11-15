@@ -9,13 +9,13 @@ import { currencyFormat } from "../data/util"
 import CartItemComponent from "../components/Cart/CartItem"
 import { useShopMetadata } from "../data/shops"
 import CartCopyModal from "../components/Cart/CartCopyModal"
+import { useEstimatedTotal } from "../data/total"
 
 export default function Cart() {
     const trip = useTripContext()
     const [cart, cartLoading] = useCart(trip?.id)
     const cartItems = useCartItems(trip?.id, cart?.id)
     const sharedCartItems = useSharedWithMe(trip?.id)
-    const shops = useShopMetadata()
 
     const sharedCartItemsTotal = useMemo(() => {
         return sharedCartItems.reduce((total, item) => {
@@ -27,6 +27,8 @@ export default function Cart() {
     const [showCopyModal, setShowCopyModal] = useState(false)
 
     const otherUsers = useOtherUsers()
+    const [estimatedTotal, total] = useEstimatedTotal(cartItems, sharedCartItemsTotal)
+    const shops = useShopMetadata()
 
     if (!trip) {
         return <></>
@@ -60,9 +62,12 @@ export default function Cart() {
         {!cart && !cartLoading && <CartInit />}
 
         {cart && <>
-            <p className="my-4 is-size-4">
-                Your total: <strong>{currencyFormat(cart?.total + sharedCartItemsTotal)}</strong>
+            <p className={`${total > 0 ? 'mt-4' : 'my-4'} is-size-4`}>
+                Your total: <strong>{currencyFormat(total)}</strong>
             </p>
+            {total > 0 && <p className="mb-4 has-text-grey">
+                + fees of about {currencyFormat(estimatedTotal - total)}
+            </p>}
 
             {sharedCartItems.length > 0 && <>
                 <p className="is-size-4 mt-4">
