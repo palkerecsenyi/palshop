@@ -6,7 +6,7 @@ import { verifyRequest } from "./util"
 import {getAuth} from "firebase-admin/auth";
 
 const stripe = new Stripe(functions.config().stripe.key, {
-    apiVersion: '2022-08-01',
+    apiVersion: '2022-11-15',
 })
 
 initializeApp()

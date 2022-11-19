@@ -8,7 +8,7 @@ export const verifyRequest = async (context: functions.https.CallableContext) =>
         )
     }
 
-    if (context.auth === undefined) {
+    if (context.auth?.token === undefined) {
         throw new functions.https.HttpsError('permission-denied', 'Valid token must be provided')
     }
 
