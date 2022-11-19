@@ -11,44 +11,11 @@ const stripe = new Stripe(functions.config().stripe.key, {
 
 initializeApp()
 
-type CartItemPrimitive = {
-    price: number
-}
-
 const regionalFunctions = functions.region("europe-west2")
-export const updateCartTotal = regionalFunctions.firestore
-    .document("trips/{trip}/carts/{cart}/items/{item}")
-    .onWrite(async (change, context) => {
-        const cartId = context.params["cart"] as string
-        const tripId = context.params["trip"] as string
 
-        const firestore = getFirestore()
-        const allItemsResponse = await firestore
-            .collection("trips")
-            .doc(tripId)
-            .collection("carts")
-            .doc(cartId)
-            .collection("items")
-            .get()
-        const allItems = allItemsResponse.docs.map(e => e.data() as CartItemPrimitive)
-        const itemsTotal = allItems.reduce((total, item) => total + item.price, 0)
-
-        await firestore
-            .collection("trips")
-            .doc(tripId)
-            .collection("carts")
-            .doc(cartId)
-            .update({
-                total: itemsTotal,
-            })
-    })
-
-type getDetailsRequest = {
-    token: string
-}
 export const getDetails = regionalFunctions.https
-    .onCall(async (data: Partial<getDetailsRequest>, context) => {
-        const userId = await verifyRequest(data, context)
+    .onCall(async (data: any, context) => {
+        const userId = await verifyRequest(context)
 
         const firestore = getFirestore()
         const customer = await firestore.collection('customers').doc(userId).get()
@@ -76,13 +43,12 @@ export const getDetails = regionalFunctions.https
     })
 
 type getCartInvoiceStatusRequest = {
-    token: string
     cartId: string
     tripId: string
 }
 export const getCartInvoiceStatus = regionalFunctions.https
     .onCall(async (data: Partial<getCartInvoiceStatusRequest>, context) => {
-        const userId = await verifyRequest(data, context)
+        const userId = await verifyRequest(context)
         if (!data.cartId || !data.tripId) {
             throw new functions.https.HttpsError('invalid-argument', 'Missing cart/trip ID')
         }
@@ -125,7 +91,7 @@ type getOtherUserListRequest = {
 }
 export const getOtherUserList = regionalFunctions.https
     .onCall(async (data: Partial<getOtherUserListRequest>, context) => {
-        const userId = await verifyRequest(data, context)
+        const userId = await verifyRequest(context)
         const auth = getAuth()
         const users = await auth.listUsers()
 

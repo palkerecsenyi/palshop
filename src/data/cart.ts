@@ -13,7 +13,7 @@ import {
     Timestamp, orderBy, collectionGroup, getDocs, writeBatch,
 } from "firebase/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
-import { getAuth, getIdToken } from "firebase/auth"
+import { getAuth } from "firebase/auth"
 import {getFunctions, httpsCallable} from "firebase/functions"
 
 export interface Cart {
@@ -116,20 +116,15 @@ export interface OtherUserDetail {
 }
 export const useOtherUsers = () => {
     const [otherUsers, setOtherUsers] = useState<OtherUserDetail[]>([])
-    const [user] = useAuthState(getAuth())
     useEffect(() => {
-        if (!user) return
         (async () => {
             const functions = getFunctions(undefined, "europe-west2")
             const callable = httpsCallable<{token: string}, OtherUserDetail[]>(functions, "getOtherUserList")
-            const token = await getIdToken(user)
-            const response = await callable({
-                token,
-            })
+            const response = await callable()
 
             setOtherUsers(response.data)
         })()
-    }, [user])
+    }, [])
 
     return otherUsers
 }

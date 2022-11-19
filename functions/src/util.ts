@@ -1,7 +1,6 @@
 import * as functions from "firebase-functions"
-import { getAuth } from "firebase-admin/auth"
 
-export const verifyRequest = async (data: { token?: string }, context: functions.https.CallableContext) => {
+export const verifyRequest = async (context: functions.https.CallableContext) => {
     if (context.app === undefined) {
         throw new functions.https.HttpsError(
             'failed-precondition',
@@ -9,18 +8,9 @@ export const verifyRequest = async (data: { token?: string }, context: functions
         )
     }
 
-    if (!data.token) {
-        throw new functions.https.HttpsError('permission-denied', 'Token must be provided')
+    if (context.auth === undefined) {
+        throw new functions.https.HttpsError('permission-denied', 'Valid token must be provided')
     }
 
-    const auth = getAuth()
-    let userId: string
-    try {
-        const user = await auth.verifyIdToken(data.token)
-        userId = user.uid
-    } catch (e) {
-        throw new functions.https.HttpsError('permission-denied', 'Invalid token')
-    }
-
-    return userId
+    return context.auth.token.uid
 }

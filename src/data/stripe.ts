@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react"
-import { useAuthState } from "react-firebase-hooks/auth"
-import {getAuth, getIdToken} from "firebase/auth"
 import { getFunctions, httpsCallable } from "firebase/functions"
 
 interface StripeStatus {
@@ -9,20 +7,15 @@ interface StripeStatus {
 }
 export const useStripeStatus = () => {
     const [status, setStatus] = useState<StripeStatus>()
-    const [user] = useAuthState(getAuth())
 
     useEffect(() => {
-        if (!user) return
         (async () => {
-            const token = await getIdToken(user)
             const functions = getFunctions(undefined, "europe-west2")
-            const response = await httpsCallable<{ token: string }, StripeStatus>(functions, "getDetails")({
-                token,
-            })
+            const response = await httpsCallable<{ token: string }, StripeStatus>(functions, "getDetails")()
 
             setStatus(response.data)
         })()
-    }, [user])
+    }, [])
 
     return status
 }
@@ -36,21 +29,18 @@ interface StripeInvoiceData {
 
 export const useInvoiceData = (tripId?: string, cartId?: string) => {
     const [data, setData] = useState<StripeInvoiceData>()
-    const [user] = useAuthState(getAuth())
 
     useEffect(() => {
-        if (!user || !tripId || !cartId) return
+        if (!tripId || !cartId) return
         (async () => {
-            const token = await getIdToken(user)
             const functions = getFunctions(undefined, "europe-west2")
-            const func = httpsCallable<{ token: string, tripId: string, cartId: string }, StripeInvoiceData>(
+            const func = httpsCallable<{ tripId: string, cartId: string }, StripeInvoiceData>(
                 functions,
                 "getCartInvoiceStatus",
             )
 
             try {
                 const response = await func({
-                    token,
                     tripId,
                     cartId
                 })
@@ -59,7 +49,7 @@ export const useInvoiceData = (tripId?: string, cartId?: string) => {
                 setData(undefined)
             }
         })()
-    }, [tripId, cartId, user])
+    }, [tripId, cartId])
 
     return data
 }
