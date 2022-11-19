@@ -19,6 +19,7 @@
     "stripe": "^11.1.0"
   },
   "devDependencies": {
+    "@types/node": "^16.11.7",
     "typescript": "^4.9.3"
   },
   "private": true
