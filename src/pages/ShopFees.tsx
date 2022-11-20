@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom"
-import { useShopMetadata } from "../data/shops"
+import { useShopMetadataContext } from "../data/shops"
 import { currencyFormat } from "../data/util"
 
 export default function ShopFees() {
-    const shops = useShopMetadata()
+    const shops = useShopMetadataContext()
 
     return <div className="container py-6 px-4">
         <Link to="/cart" className="button mb-4">

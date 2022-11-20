@@ -1,21 +1,21 @@
-import { addToCart, CartItem, OtherUserDetail, updateCartItem } from "../../data/cart"
+import { addToCart, CartItem, updateCartItem } from "../../data/cart"
 import { FormEvent, useCallback, useMemo, useState } from "react"
 import Input from "../Input"
 import { WithId } from "../../data/types"
 import { Timestamp, deleteField } from "firebase/firestore"
 import Select from "../Select"
 import { ShopMetadata } from "../../data/shops"
+import { useOtherUsersContext } from "../../data/sharing"
 
 type props = {
     initialItem?: WithId<CartItem>
     onDismiss(): void
     tripId: string
     cartId: string
-    otherUsers: OtherUserDetail[]
     shops: WithId<ShopMetadata>[]
 }
 export default function CartEdit(
-    {initialItem, onDismiss, tripId, cartId, shops, otherUsers}: props
+    {initialItem, onDismiss, tripId, cartId, shops}: props
 ) {
     const [name, setName] = useState(initialItem?.name || "")
     const [quantity, setQuantity] = useState(initialItem?.quantity || 0)
@@ -86,6 +86,8 @@ export default function CartEdit(
     const selectedShop = useMemo(() => {
         return shops.find(e => e.id === shop)
     }, [shops, shop])
+
+    const otherUsers = useOtherUsersContext()
 
     return <div className="box">
         <form onSubmit={submit}>

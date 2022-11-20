@@ -14,7 +14,6 @@ import {
 } from "firebase/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth } from "firebase/auth"
-import {getFunctions, httpsCallable} from "firebase/functions"
 
 export interface Cart {
     trip: string
@@ -108,25 +107,6 @@ export const updateCartItem = async (tripId: string, cartId: string, itemId: str
 export const deleteCartItem = async (tripId: string, cartId: string, itemId: string) => {
     const firestore = getFirestore()
     await deleteDoc(doc(firestore, "trips", tripId, "carts", cartId, "items", itemId))
-}
-
-export interface OtherUserDetail {
-    id: string
-    name: string
-}
-export const useOtherUsers = () => {
-    const [otherUsers, setOtherUsers] = useState<OtherUserDetail[]>([])
-    useEffect(() => {
-        (async () => {
-            const functions = getFunctions(undefined, "europe-west2")
-            const callable = httpsCallable<{token: string}, OtherUserDetail[]>(functions, "getOtherUserList")
-            const response = await callable()
-
-            setOtherUsers(response.data)
-        })()
-    }, [])
-
-    return otherUsers
 }
 
 export const useSharedWithMe = (tripId?: string) => {

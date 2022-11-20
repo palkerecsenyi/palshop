@@ -1,4 +1,4 @@
-import { CartItem, deleteCartItem, OtherUserDetail } from "../../data/cart"
+import { CartItem, deleteCartItem } from "../../data/cart"
 import { currencyFormat } from "../../data/util"
 import { useCallback, useMemo, useState } from "react"
 import CartEdit from "./CartEdit"
@@ -6,21 +6,22 @@ import { WithId } from "../../data/types"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth } from "firebase/auth"
 import { ShopMetadata } from "../../data/shops"
+import { useOtherUsersContext } from "../../data/sharing"
 
 type props = {
     item: WithId<CartItem>
     tripId: string
     cartId: string
-    otherUsers: OtherUserDetail[]
     shops: WithId<ShopMetadata>[]
     readOnly?: boolean
 }
 export default function CartItemComponent(
-    {item, tripId, cartId, otherUsers, shops, readOnly}: props
+    {item, tripId, cartId, shops, readOnly}: props
 ) {
     const [editing, setEditing] = useState(false)
     const [user] = useAuthState(getAuth())
 
+    const otherUsers = useOtherUsersContext()
     const otherUserEmail = useMemo<string | undefined>(() => {
         const { shared } = item
         if (!shared) return undefined
@@ -43,7 +44,6 @@ export default function CartItemComponent(
                 tripId={tripId}
                 cartId={cartId}
                 initialItem={item}
-                otherUsers={otherUsers}
                 shops={shops}
             />
         </div>

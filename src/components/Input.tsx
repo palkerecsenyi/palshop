@@ -1,7 +1,7 @@
 import type { DetailedHTMLProps, InputHTMLAttributes, ReactNode } from "react"
 
 type props = DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> & {
-    label: string,
+    label?: string,
     help?: string,
     leftIcon?: ReactNode
 }
@@ -10,7 +10,7 @@ export default function Input({label, help, leftIcon, ...inputProps}: props) {
     return <div className="field">
         <label className={isCheckbox ? 'checkbox' : 'label'}>
             {isCheckbox ? '' : label}
-            {!isCheckbox ? 
+            {!isCheckbox ?
                 <div className={`control ${leftIcon ? "has-icons-left" : ""}`}>
                     <input
                         className="input"

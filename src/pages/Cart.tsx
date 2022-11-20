@@ -1,15 +1,18 @@
 import { Link } from "react-router-dom"
 import { formatTripStatus, TripStatus, useTripContext } from "../data/trips"
-import { useCart, useCartItems, useOtherUsers, useSharedWithMe } from "../data/cart"
+import { useCart, useCartItems, useSharedWithMe } from "../data/cart"
 import CartInit from "../components/Cart/CartInit"
 import CartEmpty from "../components/Cart/CartEmpty"
 import { useMemo, useState } from "react"
 import CartEdit from "../components/Cart/CartEdit"
 import { currencyFormat } from "../data/util"
 import CartItemComponent from "../components/Cart/CartItem"
-import { useShopMetadata } from "../data/shops"
 import CartCopyModal from "../components/Cart/CartCopyModal"
 import { useEstimatedTotal } from "../data/total"
+import Input from "../components/Input"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
+import { useShopMetadataContext } from "../data/shops"
 
 export default function Cart() {
     const trip = useTripContext()
@@ -26,9 +29,16 @@ export default function Cart() {
     const [adding, setAdding] = useState(false)
     const [showCopyModal, setShowCopyModal] = useState(false)
 
-    const otherUsers = useOtherUsers()
     const [estimatedTotal, total] = useEstimatedTotal(cartItems, sharedCartItemsTotal)
-    const shops = useShopMetadata()
+    const shops = useShopMetadataContext()
+
+    const [searchQuery, setSearchQuery] = useState("")
+    const searchResults = useMemo(() => {
+        const normalisedQuery = searchQuery.toLowerCase()
+        return cartItems.filter(item => {
+            return item.name.toLowerCase().includes(normalisedQuery) || item.id === searchQuery
+        })
+    }, [searchQuery, cartItems])
 
     if (!trip) {
         return <></>
@@ -90,7 +100,6 @@ export default function Cart() {
                     key={item.id}
                     tripId={trip.id}
                     cartId={cart.id}
-                    otherUsers={otherUsers}
                     shops={shops}
                     readOnly
                 />)}
@@ -103,16 +112,16 @@ export default function Cart() {
             {cartItems.length === 0 && <CartEmpty />}
 
             <div className="field is-grouped">
-               {!adding && <p className="control">
+                {!adding && <p className="control">
                    <button className="button is-primary" onClick={() => setAdding(true)}>
                        Add item
                    </button>
-               </p>}
-               <p className="control">
+                </p>}
+                <p className="control">
                    <button className="button" onClick={() => setShowCopyModal(true)}>
                        Copy cart
                    </button>
-               </p>
+                </p>
             </div>
 
             {showCopyModal && <CartCopyModal
@@ -125,17 +134,21 @@ export default function Cart() {
                 onDismiss={() => setAdding(false)}
                 tripId={trip.id}
                 cartId={cart.id}
-                otherUsers={otherUsers}
                 shops={shops}
             />}
 
+            <Input
+                leftIcon={<FontAwesomeIcon icon={faMagnifyingGlass} />}
+                placeholder="Search cart..."
+                onChange={e => setSearchQuery(e.target.value)}
+                value={searchQuery}
+            />
 
-            {cartItems.map(item => <CartItemComponent
+            {searchResults.map(item => <CartItemComponent
                 item={item}
                 key={item.id}
                 tripId={trip.id}
                 cartId={cart.id}
-                otherUsers={otherUsers}
                 shops={shops}
             />)}
         </>}

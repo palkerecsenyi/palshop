@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 import { collection, getDocs, getFirestore } from "firebase/firestore"
 import { WithId } from "./types"
+
+export const ShopMetadataContext = createContext<WithId<ShopMetadata>[]>([])
+export const useShopMetadataContext = () => useContext(ShopMetadataContext)
 
 export interface ShopMetadata {
     name: string

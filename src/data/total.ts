@@ -1,10 +1,10 @@
 import { WithId } from "./types"
 import { CartItem } from "./cart"
-import { useShopMetadata } from "./shops"
+import { useShopMetadataContext } from "./shops"
 import { useMemo } from "react"
 
 export const useEstimatedTotal = (cartItems: WithId<CartItem>[], sharedCartTotal: number) => {
-    const shops = useShopMetadata()
+    const shops = useShopMetadataContext()
 
     return useMemo(() => {
         const shopsUsed: string[] = []
