@@ -14,7 +14,7 @@ export const useOtherUsers = () => {
     useEffect(() => {
         (async () => {
             const functions = getFunctions(undefined, "europe-west2")
-            const callable = httpsCallable<{token: string}, OtherUserDetail[]>(functions, "getOtherUserList")
+            const callable = httpsCallable<never, OtherUserDetail[]>(functions, "getOtherUserList")
             const response = await callable()
 
             setOtherUsers(response.data)

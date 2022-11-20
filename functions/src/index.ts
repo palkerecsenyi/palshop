@@ -95,11 +95,12 @@ export const getOtherUserList = regionalFunctions.https
         const auth = getAuth()
         const users = await auth.listUsers()
 
-        const usersWithoutCurrent = users.users.filter(e => {
-            return e.uid !== userId
+        const filteredUsers = users.users.filter(e => {
+            const customClaims = (e.customClaims || {}) as {shareable?: boolean}
+            return e.uid !== userId && customClaims["shareable"] === true
         })
 
-        return usersWithoutCurrent.map(e => ({
+        return filteredUsers.map(e => ({
             name: e.displayName,
             id: e.uid,
         }))
