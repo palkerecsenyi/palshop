@@ -137,12 +137,12 @@ export default function Cart() {
                 shops={shops}
             />}
 
-            <Input
+            {cartItems.length > 0 && <Input
                 leftIcon={<FontAwesomeIcon icon={faMagnifyingGlass} />}
                 placeholder="Search cart..."
                 onChange={e => setSearchQuery(e.target.value)}
                 value={searchQuery}
-            />
+            />}
 
             {searchResults.map(item => <CartItemComponent
                 item={item}
