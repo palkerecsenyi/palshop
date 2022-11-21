@@ -75,7 +75,7 @@ export default function TripHistoryDetails() {
                 </div>
             </article>}
 
-            {((!cart && !cartLoading) || cart?.total === 0) && <article className="message mt-4 is-info">
+            {(!cart && !cartLoading) && <article className="message mt-4 is-info">
                 <div className="message-body">
                     <p>
                         You didn't buy anything for this trip.
@@ -83,10 +83,7 @@ export default function TripHistoryDetails() {
                 </div>
             </article>}
 
-            {cart && cart.total > 0 && <div className="mt-4">
-                <p className="is-size-4">
-                    Cart total: <strong>{currencyFormat(cart.total)}</strong>
-                </p>
+            {cart && <div className="mt-4">
                 <div className="content">
                     <ul>
                         {cartItems.map(item => <li key={item.id}>

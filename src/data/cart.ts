@@ -18,7 +18,6 @@ import { getAuth } from "firebase/auth"
 export interface Cart {
     trip: string
     owner: string
-    total: number
 }
 
 export interface CartItem {
@@ -71,7 +70,6 @@ export const createCart = async (tripId: string, userId: string) => {
     const cart: Cart = {
         trip: tripId,
         owner: userId,
-        total: 0,
     }
     await addDoc(collection(firestore, "trips", tripId, "carts"), cart)
 }
