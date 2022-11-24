@@ -13,16 +13,20 @@ import Input from "../components/Input"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
 import { useShopMetadataContext } from "../data/shops"
+import { LocalPricesContext, useAllPrices } from "../data/price"
+import CartSharedWithMe from "../components/Cart/SharedList/CartSharedWithMe"
 
 export default function Cart() {
     const trip = useTripContext()
     const [cart, cartLoading] = useCart(trip?.id)
     const cartItems = useCartItems(trip?.id, cart?.id)
 
+    const allPrices = useAllPrices(trip?.id)
+
     const [adding, setAdding] = useState(false)
     const [showCopyModal, setShowCopyModal] = useState(false)
 
-    const [estimatedTotal, total] = useEstimatedTotal(cartItems)
+    const [estimatedTotal, total] = useEstimatedTotal(cartItems, allPrices)
     const shops = useShopMetadataContext()
 
     const [searchQuery, setSearchQuery] = useState("")
@@ -64,13 +68,18 @@ export default function Cart() {
 
         {!cart && !cartLoading && <CartInit />}
 
-        {cart && <>
+        {cart && <LocalPricesContext.Provider value={allPrices}>
             <p className={`${total > 0 ? 'mt-4' : 'my-4'} is-size-4`}>
                 Your total: <strong>{currencyFormat(total)}</strong>
             </p>
             {total > 0 && <p className="mb-4 has-text-grey">
                 + fees of about {currencyFormat(estimatedTotal - total)}
             </p>}
+
+            <CartSharedWithMe
+                tripId={trip.id}
+                cartId={cart.id}
+            />
 
             {cartItems.length === 0 && <CartEmpty />}
 
@@ -114,6 +123,6 @@ export default function Cart() {
                 cartId={cart.id}
                 shops={shops}
             />)}
-        </>}
+        </LocalPricesContext.Provider>}
     </div>
 }

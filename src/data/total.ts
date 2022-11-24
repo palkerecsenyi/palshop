@@ -1,10 +1,14 @@
-import { WithId } from "./types"
-import { CartItem } from "./cart"
+import type { WithId } from "./types"
+import type { CartItem } from "./cart"
 import { useShopMetadataContext } from "./shops"
 import { useMemo } from "react"
+import type { Price } from "./price"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { getAuth } from "firebase/auth"
 
-export const useEstimatedTotal = (cartItems: WithId<CartItem>[]) => {
+export const useEstimatedTotal = (cartItems: WithId<CartItem>[], allPrices: WithId<Price>[]) => {
     const shops = useShopMetadataContext()
+    const [user] = useAuthState(getAuth())
 
     return useMemo(() => {
         const shopsUsed: string[] = []
@@ -14,6 +18,11 @@ export const useEstimatedTotal = (cartItems: WithId<CartItem>[]) => {
             if (!shopsUsed.includes(item.shopId)) {
                 shopsUsed.push(item.shopId)
             }
+        }
+
+        for (const price of allPrices) {
+            if (price.primary || price.userId !== user?.uid) continue
+            total += price.price
         }
 
         let deliveryFees = 0
@@ -27,5 +36,5 @@ export const useEstimatedTotal = (cartItems: WithId<CartItem>[]) => {
         // Stripe processing fee for UK cards
         const processingFee = (total / 100) * 1.8 + 20
         return [total + processingFee + deliveryFees, total] as const
-    }, [shops, cartItems])
+    }, [shops, cartItems, allPrices, user?.uid])
 }

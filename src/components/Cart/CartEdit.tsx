@@ -5,7 +5,7 @@ import { WithId } from "../../data/types"
 import { Timestamp } from "firebase/firestore"
 import Select from "../Select"
 import { ShopMetadata } from "../../data/shops"
-import CartShareModal from "./Share/CartShareModal"
+import CartShareModal from "./ShareModal/CartShareModal"
 import {v4 as uuid} from "uuid"
 
 type props = {

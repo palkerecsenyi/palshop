@@ -53,34 +53,32 @@ export default function CartShareModalAdd(
     }, [otherUsers, shares])
 
     return <div className="box">
-        <form>
-            <Select
-                label="User to share with"
-                options={unusedOtherUsers.map(({id, name}) => [id, name])}
-                value={userId}
-                onChange={e => setUserId(e.target.value)}
-                disabled={loading}
-                required
-            />
+        <Select
+            label="User to share with"
+            options={unusedOtherUsers.map(({id, name}) => [id, name])}
+            value={userId}
+            onChange={e => setUserId(e.target.value)}
+            disabled={loading}
+            required
+        />
 
-            <Input
-                label="Price"
-                leftIcon="£"
-                help="Use the total (not per unit) price this user should pay."
-                disabled={loading}
-                value={price}
-                onChange={e => setPrice(e.target.value)}
-                required
-            />
+        <Input
+            label="Price"
+            leftIcon="£"
+            help="Use the total (not per unit) price this user should pay."
+            disabled={loading}
+            value={price}
+            onChange={e => setPrice(e.target.value)}
+            required
+        />
 
-            <div className="buttons">
-                <button className="button is-primary" onClick={save}>
-                    Save
-                </button>
-                <button className="button" onClick={cancel}>
-                    Cancel
-                </button>
-            </div>
-        </form>
+        <div className="buttons">
+            <button className="button is-primary" onClick={save}>
+                Save
+            </button>
+            <button className="button" onClick={cancel}>
+                Cancel
+            </button>
+        </div>
     </div>
 }

@@ -1,8 +1,8 @@
 import Modal from "../../Modal"
-import { useSecondaryPrices } from "../../../data/price"
 import CartShareModalRow from "./CartShareModalRow"
 import { useState } from "react"
 import CartShareModalAdd from "./CartShareModalAdd"
+import { useItemSharedToContext } from "../../../data/price"
 
 type props = {
     close(): void
@@ -13,7 +13,7 @@ type props = {
 export default function CartShareModal(
     { close, tripId, cartId, itemId }: props
 ) {
-    const shares = useSecondaryPrices(tripId, cartId, itemId)
+    const shares = useItemSharedToContext(itemId)
     const [adding, setAdding] = useState(false)
 
     return <Modal

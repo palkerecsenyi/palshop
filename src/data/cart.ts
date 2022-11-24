@@ -10,7 +10,7 @@ import {
     setDoc,
     doc,
     deleteDoc,
-    Timestamp, orderBy, collectionGroup, getDocs, writeBatch,
+    Timestamp, orderBy, getDocs, writeBatch,
 } from "firebase/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth } from "firebase/auth"
@@ -98,28 +98,6 @@ export const setCartItem = async (tripId: string, cartId: string, itemId: string
 export const deleteCartItem = async (tripId: string, cartId: string, itemId: string) => {
     const firestore = getFirestore()
     await deleteDoc(doc(firestore, "trips", tripId, "carts", cartId, "items", itemId))
-}
-
-export const useSharedWithMe = (tripId?: string) => {
-    const [items, setItems] = useState<WithId<CartItem>[]>([])
-    const [user] = useAuthState(getAuth())
-
-    useEffect(() => {
-        if (!tripId || !user) return
-        const firestore = getFirestore()
-        return onSnapshot(query(
-            collectionGroup(firestore, "items"),
-            where("tripId", "==", tripId),
-            where("shared.otherUserId", '==', user.uid)
-        ), (snapshot) => {
-            setItems(snapshot.docs.map(e => ({
-                ...e.data() as CartItem,
-                id: e.id,
-            })))
-        })
-    }, [tripId, user?.uid])
-
-    return items
 }
 
 export const copyCart = async (

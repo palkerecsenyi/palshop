@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import { WithId } from "./types"
-import { collection, deleteDoc, doc, getFirestore, onSnapshot, query, setDoc, where } from "firebase/firestore"
+import { collection, deleteDoc, doc, getDoc, getFirestore, onSnapshot, setDoc } from "firebase/firestore"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { getAuth } from "firebase/auth"
+import { CartItem } from "./cart"
 
 export interface Price {
     itemId: string
@@ -10,31 +13,67 @@ export interface Price {
     price: number
 }
 
-export const useSecondaryPrices = (tripId?: string, cartId?: string, itemId?: string) => {
-    const [prices, setPrices] = useState<WithId<Price>[]>([])
-    useEffect(() => {
-        if (!tripId || !cartId || !itemId) {
-            setPrices([])
-            return
-        }
+export const LocalPricesContext = createContext<WithId<Price>[]>([])
+export const useLocalPricesContext = () => useContext(LocalPricesContext)
 
+export const useAllPrices = (tripId?: string) => {
+    const [prices, setPrices] = useState<WithId<Price>[]>([])
+    const [user] = useAuthState(getAuth())
+
+    useEffect(() => {
+        if (!tripId || !user) return
         const firestore = getFirestore()
-        const q = query(
-            collection(firestore, "trips", tripId, "prices"),
-            where("cartId", "==", cartId),
-            where("itemId", "==", itemId),
-            where("primary", "==", false),
-        )
-        return onSnapshot(q, snapshot => {
+        return onSnapshot(collection(firestore, "trips", tripId, "prices"), snapshot => {
             const docs = snapshot.docs.map(e => ({
                 ...e.data() as Price,
                 id: e.id,
             }))
             setPrices(docs)
         })
-    }, [tripId, cartId, itemId])
-
+    }, [tripId, user])
     return prices
+}
+
+export const usePricesSharedWithMeContext = () => {
+    const allPrices = useLocalPricesContext()
+    const [user] = useAuthState(getAuth())
+    return useMemo(() => {
+        if (!user?.uid) return []
+
+        return allPrices.filter(e => {
+            return !e.primary && e.userId === user.uid
+        })
+    }, [allPrices, user?.uid])
+}
+
+export const useItemSharedToContext = (itemId?: string) => {
+    const allPrices = useLocalPricesContext()
+    return useMemo(() => {
+        if (!itemId) return []
+
+        return allPrices.filter(e => {
+            return !e.primary && e.itemId === itemId
+        })
+    }, [allPrices, itemId])
+}
+
+export const usePriceItem = (tripId: string, price: Price) => {
+    const [item, setItem] = useState<WithId<CartItem>>()
+    useEffect(() => {
+        const firestore = getFirestore();
+        (async () => {
+            const response = await getDoc(
+                doc(firestore, "trips", tripId, "carts", price.cartId, "items", price.itemId)
+            )
+            if (!response.exists()) return
+
+            setItem({
+                ...response.data() as CartItem,
+                id: response.id,
+            })
+        })()
+    })
+    return item
 }
 
 export const deletePrice = async (tripId: string, priceId: string) => {
