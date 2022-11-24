@@ -66,7 +66,8 @@ export const updatePrimaryPrice = regionalFunctions.firestore
             cartId,
             userId: cart.owner,
             primary: true,
-            price: item.price,
+            // make sure price is not a float
+            price: Math.round(item.price),
         }
         await primaryPriceRef.set(price)
     })

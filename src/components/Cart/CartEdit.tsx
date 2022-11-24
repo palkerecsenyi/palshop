@@ -85,7 +85,7 @@ export default function CartEdit(
             <Input
                 label="Price"
                 placeholder="Enter the total price..."
-                help="Use the total price (not per unit) to account for multi-buy offers (etc)."
+                help="Use the total price (not per unit) to account for multi-buy offers (etc). If sharing, enter only the amount you're paying."
                 type="text"
                 leftIcon="£"
                 value={price}
