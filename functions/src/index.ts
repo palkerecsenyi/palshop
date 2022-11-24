@@ -13,6 +13,64 @@ initializeApp()
 
 const regionalFunctions = functions.region("europe-west2")
 
+type Price = {
+    itemId: string
+    cartId: string
+    userId: string
+    primary: boolean
+    price: number
+}
+export const updatePrimaryPrice = regionalFunctions.firestore
+    .document("trips/{trip}/carts/{cart}/items/{item}")
+    .onWrite(async (change, context) => {
+        const firestore = getFirestore()
+        const tripId = context.params["trip"]
+        const cartId = context.params["cart"]
+        const itemId = context.params["item"]
+        const primaryPriceRef = firestore
+            .collection("trips")
+            .doc(tripId)
+            .collection("prices")
+            .doc(itemId)
+
+        if (!change.after.exists) {
+            await primaryPriceRef.delete()
+
+            await firestore.runTransaction(async transaction => {
+                const response = await transaction.get(primaryPriceRef.parent
+                    .where("itemId", "==", itemId)
+                    .where("cartId", "==", cartId)
+                    .where("primary", "==", false))
+
+                for (const doc of response.docs) {
+                    await transaction.delete(doc.ref)
+                }
+            })
+
+            return
+        }
+
+        const cartResponse = await primaryPriceRef.parent.parent!
+            .collection("carts")
+            .doc(cartId)
+            .get()
+
+        const cart = cartResponse.data() as {owner: string} | undefined
+        if (!cart) return
+
+        const item = change.after.data() as {price: number} | undefined
+        if (!item) return
+
+        const price: Price = {
+            itemId,
+            cartId,
+            userId: cart.owner,
+            primary: true,
+            price: item.price,
+        }
+        await primaryPriceRef.set(price)
+    })
+
 export const getDetails = regionalFunctions.https
     .onCall(async (data: any, context) => {
         const userId = await verifyRequest(context)

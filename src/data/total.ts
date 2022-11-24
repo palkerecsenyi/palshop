@@ -3,7 +3,7 @@ import { CartItem } from "./cart"
 import { useShopMetadataContext } from "./shops"
 import { useMemo } from "react"
 
-export const useEstimatedTotal = (cartItems: WithId<CartItem>[], sharedCartTotal: number) => {
+export const useEstimatedTotal = (cartItems: WithId<CartItem>[]) => {
     const shops = useShopMetadataContext()
 
     return useMemo(() => {
@@ -16,7 +16,6 @@ export const useEstimatedTotal = (cartItems: WithId<CartItem>[], sharedCartTotal
             }
         }
 
-        total += sharedCartTotal
         let deliveryFees = 0
 
         for (const shopId of shopsUsed) {
@@ -28,5 +27,5 @@ export const useEstimatedTotal = (cartItems: WithId<CartItem>[], sharedCartTotal
         // Stripe processing fee for UK cards
         const processingFee = (total / 100) * 1.8 + 20
         return [total + processingFee + deliveryFees, total] as const
-    }, [shops, cartItems, sharedCartTotal])
+    }, [shops, cartItems])
 }

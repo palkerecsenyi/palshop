@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { formatTripStatus, TripStatus, useTripContext } from "../data/trips"
-import { useCart, useCartItems, useSharedWithMe } from "../data/cart"
+import { useCart, useCartItems } from "../data/cart"
 import CartInit from "../components/Cart/CartInit"
 import CartEmpty from "../components/Cart/CartEmpty"
 import { useMemo, useState } from "react"
@@ -18,18 +18,11 @@ export default function Cart() {
     const trip = useTripContext()
     const [cart, cartLoading] = useCart(trip?.id)
     const cartItems = useCartItems(trip?.id, cart?.id)
-    const sharedCartItems = useSharedWithMe(trip?.id)
-
-    const sharedCartItemsTotal = useMemo(() => {
-        return sharedCartItems.reduce((total, item) => {
-            return total + item.shared!.otherUserPays
-        }, 0)
-    }, [sharedCartItems])
 
     const [adding, setAdding] = useState(false)
     const [showCopyModal, setShowCopyModal] = useState(false)
 
-    const [estimatedTotal, total] = useEstimatedTotal(cartItems, sharedCartItemsTotal)
+    const [estimatedTotal, total] = useEstimatedTotal(cartItems)
     const shops = useShopMetadataContext()
 
     const [searchQuery, setSearchQuery] = useState("")
@@ -78,36 +71,6 @@ export default function Cart() {
             {total > 0 && <p className="mb-4 has-text-grey">
                 + fees of about {currencyFormat(estimatedTotal - total)}
             </p>}
-
-            {sharedCartItems.length > 0 && <>
-                <p className="is-size-4 mt-4">
-                    Items shared with you
-                </p>
-                <p>
-                    These are items that other people are sharing the cost of with you.
-                    If you see anything unexpected here, please let Pal know.
-                    These items will be added to your invoice.
-                </p>
-                <p>
-                    The prices shown are how much you're paying.
-                </p>
-
-                {sharedCartItems.map(item => <CartItemComponent
-                    item={{
-                        ...item,
-                        price: item.shared!.otherUserPays,
-                    }}
-                    key={item.id}
-                    tripId={trip.id}
-                    cartId={cart.id}
-                    shops={shops}
-                    readOnly
-                />)}
-
-                <p className="is-size-4 mb-4 mt-5">
-                    Your items
-                </p>
-            </>}
 
             {cartItems.length === 0 && <CartEmpty />}
 

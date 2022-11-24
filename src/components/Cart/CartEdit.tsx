@@ -1,11 +1,12 @@
-import { addToCart, CartItem, updateCartItem } from "../../data/cart"
+import { CartItem, setCartItem} from "../../data/cart"
 import { FormEvent, useCallback, useMemo, useState } from "react"
 import Input from "../Input"
 import { WithId } from "../../data/types"
-import { Timestamp, deleteField } from "firebase/firestore"
+import { Timestamp } from "firebase/firestore"
 import Select from "../Select"
 import { ShopMetadata } from "../../data/shops"
-import { useOtherUsersContext } from "../../data/sharing"
+import CartShareModal from "./Share/CartShareModal"
+import {v4 as uuid} from "uuid"
 
 type props = {
     initialItem?: WithId<CartItem>
@@ -20,15 +21,8 @@ export default function CartEdit(
     const [name, setName] = useState(initialItem?.name || "")
     const [quantity, setQuantity] = useState(initialItem?.quantity || 0)
     const [price, setPrice] = useState(initialItem?.price ? (initialItem.price / 100).toString() : "")
-    const [showSharePrompt, setShowSharePrompt] = useState(!!initialItem?.shared)
-    const [shareDetails, setShareDetails] = useState(initialItem?.shared ? {
-        otherUserId: initialItem.shared.otherUserId,
-        otherUserPays: (initialItem.shared.otherUserPays / 100).toString()
-    } : {
-        otherUserId: "",
-        otherUserPays: "0",
-    })
     const [shop, setShop] = useState(initialItem?.shopId || "")
+    const [id] = useState(initialItem?.id || uuid())
 
     const [loading, setLoading] = useState(false)
 
@@ -46,48 +40,26 @@ export default function CartEdit(
             shopId: shop,
         }
 
-        if (showSharePrompt && shareDetails.otherUserId !== "" && shareDetails.otherUserPays !== "0") {
-            const parsedSharedPrice = parseFloat(shareDetails.otherUserPays) * 100
-            if (isNaN(parsedSharedPrice)) return
-
-            item.shared = {
-                otherUserId: shareDetails.otherUserId,
-                otherUserPays: parsedSharedPrice,
-            }
-        }
-
-        // If the user has unticked the button, make sure the field gets deleted
-        // Only works on updates not new items
-        if (!showSharePrompt && initialItem) {
-            // @ts-ignore
-            item.shared = deleteField()
-        }
-
         setLoading(true)
         if (!initialItem) {
             item.createdAt = Timestamp.now()
             item.tripId = tripId
-            await addToCart(tripId, cartId, item as CartItem)
-        } else {
-            await updateCartItem(tripId, cartId, initialItem.id, item)
         }
+        await setCartItem(tripId, cartId, id, item)
+
         onDismiss()
         setLoading(false)
-    }, [initialItem, onDismiss, tripId, cartId, name, quantity, price, shop, shareDetails.otherUserId, shareDetails.otherUserPays, showSharePrompt])
-
-    const priceHelpText = useMemo(() => {
-        let baseText = "Use the total price (not per unit) to account for multi-buy offers (etc)."
-        if (showSharePrompt) {
-            baseText += " This is the price you pay (exclude the price the other person is paying)."
-        }
-        return baseText
-    }, [showSharePrompt])
+    }, [initialItem, onDismiss, tripId, cartId, name, quantity, price, shop, id])
 
     const selectedShop = useMemo(() => {
         return shops.find(e => e.id === shop)
     }, [shops, shop])
 
-    const otherUsers = useOtherUsersContext()
+    const [showShareModal, setShowShareModal] = useState(false)
+    const shareModalButtonClick = useCallback((e: FormEvent) => {
+        e.preventDefault()
+        setShowShareModal(true)
+    }, [])
 
     return <div className="box">
         <form onSubmit={submit}>
@@ -113,7 +85,7 @@ export default function CartEdit(
             <Input
                 label="Price"
                 placeholder="Enter the total price..."
-                help={priceHelpText}
+                help="Use the total price (not per unit) to account for multi-buy offers (etc)."
                 type="text"
                 leftIcon="£"
                 value={price}
@@ -130,32 +102,19 @@ export default function CartEdit(
                 onChange={(e) => setShop(e.target.value)}
             />
 
-            <Input
-                label="Share price with another person"
-                type="checkbox"
-                value="showPrompt"
-                checked={showSharePrompt}
-                onChange={e => setShowSharePrompt(e.target.checked)}
-                disabled={loading}
-            />
+            <button
+                className="button mb-4"
+                onClick={shareModalButtonClick}
+            >
+                Share price
+            </button>
 
-            {showSharePrompt && <div className="box">
-                <Select
-                    label="Person to share price with"
-                    value={shareDetails.otherUserId}
-                    onChange={(e) => setShareDetails({...shareDetails, otherUserId: e.target.value})}
-                    options={otherUsers.map(e => [e.id, e.name])}
-                />
-                <Input
-                    label="Amount other person should pay"
-                    help="The total final amount the other person is contributing to this item. Same as the other price field, enter the total (not per-unit) price."
-                    type="text"
-                    leftIcon="£"
-                    value={shareDetails.otherUserPays}
-                    onChange={e => setShareDetails({...shareDetails, otherUserPays: e.target.value})}
-                    disabled={loading}
-                />
-            </div>}
+            {showShareModal && <CartShareModal
+                close={() => setShowShareModal(false)}
+                tripId={tripId}
+                cartId={cartId}
+                itemId={id}
+            />}
 
             <div className="buttons">
                 <button type="submit" disabled={loading} className="button is-primary">

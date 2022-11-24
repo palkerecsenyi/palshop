@@ -7,7 +7,7 @@ import {
     query,
     where,
     addDoc,
-    updateDoc,
+    setDoc,
     doc,
     deleteDoc,
     Timestamp, orderBy, collectionGroup, getDocs, writeBatch,
@@ -25,10 +25,6 @@ export interface CartItem {
     quantity: number
     price: number
     createdAt: Timestamp
-    shared?: {
-        otherUserId: string
-        otherUserPays: number
-    }
     // for collectionGroup queries
     tripId: string
     shopId: string
@@ -92,14 +88,11 @@ export const useCartItems = (tripId?: string, cartId?: string) => {
     return items
 }
 
-export const addToCart = async (tripId: string, cartId: string, item: CartItem) => {
+export const setCartItem = async (tripId: string, cartId: string, itemId: string, item: Partial<CartItem>) => {
     const firestore = getFirestore()
-    await addDoc(collection(firestore, "trips", tripId, "carts", cartId, "items"), item)
-}
-
-export const updateCartItem = async (tripId: string, cartId: string, itemId: string, item: Partial<CartItem>) => {
-    const firestore = getFirestore()
-    await updateDoc(doc(firestore, "trips", tripId, "carts", cartId, "items", itemId), item)
+    await setDoc(doc(firestore, "trips", tripId, "carts", cartId, "items", itemId), item, {
+        merge: true,
+    })
 }
 
 export const deleteCartItem = async (tripId: string, cartId: string, itemId: string) => {
@@ -176,10 +169,6 @@ export const copyCart = async (
             createdAt: Timestamp.now(),
             tripId: toTripId,
             shopId: item.shopId,
-        }
-
-        if (item.shared) {
-            newItemData.shared = item.shared
         }
 
         batch.set(newItemRef, newItemData)
