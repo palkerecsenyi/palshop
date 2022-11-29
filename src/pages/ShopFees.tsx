@@ -1,14 +1,13 @@
-import { Link } from "react-router-dom"
 import { useShopMetadataContext } from "../data/shops"
 import { currencyFormat } from "../data/util"
+import PageContainer from "../components/PageContainer"
+import HomeLink from "../components/HomeLink"
 
 export default function ShopFees() {
     const shops = useShopMetadataContext()
 
-    return <div className="container py-6 px-4">
-        <Link to="/cart" className="button mb-4">
-            Back to cart
-        </Link>
+    return <PageContainer>
+        <HomeLink />
 
         <h1 className="title">
             Current shop fees
@@ -26,5 +25,5 @@ export default function ShopFees() {
                 </li>)}
             </ul>
         </div>
-    </div>
+    </PageContainer>
 }

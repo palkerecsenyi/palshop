@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom"
 import { formatTripStatus, TripStatus, useTripContext } from "../data/trips"
 import { useCart, useCartItems } from "../data/cart"
 import CartInit from "../components/Cart/CartInit"
@@ -15,6 +14,8 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
 import { useShopMetadataContext } from "../data/shops"
 import { LocalPricesContext, useAllPrices } from "../data/price"
 import CartSharedWithMe from "../components/Cart/SharedList/CartSharedWithMe"
+import PageContainer from "../components/PageContainer"
+import HomeLink from "../components/HomeLink"
 
 export default function Cart() {
     const trip = useTripContext()
@@ -42,7 +43,9 @@ export default function Cart() {
     }
 
     if (trip.status !== TripStatus.AcceptingOrders) {
-        return <div className="container py-6 px-4">
+        return <PageContainer>
+            <HomeLink />
+
             <h1 className="title">
                 Trip closed :(
             </h1>
@@ -50,17 +53,11 @@ export default function Cart() {
             <p className="is-size-4">
                 Unfortunately, this trip is closed and not accepting any more orders. At the moment, it's {formatTripStatus(trip.status)}.
             </p>
-
-            <Link to="/" className="button mt-4">
-                Back home
-            </Link>
-        </div>
+        </PageContainer>
     }
 
-    return <div className="container py-6 px-4">
-        <Link to="/" className="button mb-4">
-            Back home
-        </Link>
+    return <PageContainer>
+        <HomeLink />
 
         <h1 className="title">
             My shopping cart
@@ -124,5 +121,5 @@ export default function Cart() {
                 shops={shops}
             />)}
         </LocalPricesContext.Provider>}
-    </div>
+    </PageContainer>
 }

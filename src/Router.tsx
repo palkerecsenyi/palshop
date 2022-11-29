@@ -8,6 +8,7 @@ import TripHistory from "./pages/TripHistory"
 import TripHistoryDetails from "./pages/TripHistoryDetails"
 import ShopFees from "./pages/ShopFees"
 import About from "./pages/About"
+import AccountSettings from "./pages/AccountSettings"
 
 const router = createBrowserRouter([
     {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
             {
                 path: "fees",
                 element: <ShopFees />,
+            },
+            {
+                path: "account",
+                element: <AccountSettings />,
             }
         ]
     },

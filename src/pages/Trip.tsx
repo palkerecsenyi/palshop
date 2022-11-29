@@ -4,6 +4,7 @@ import { Link } from "react-router-dom"
 import { useStripeStatus } from "../data/stripe"
 import { useCallback } from "react"
 import { getAuth, signOut } from "firebase/auth"
+import PageContainer from "../components/PageContainer"
 
 export default function Trip() {
     const trip = useTripContext()
@@ -18,7 +19,7 @@ export default function Trip() {
         return <></>
     }
 
-    return <div className="container py-6 px-4">
+    return <PageContainer>
         <button className="button mb-4" onClick={logOut}>
             Log out
         </button>
@@ -93,6 +94,12 @@ export default function Trip() {
             >
                 Trip history
             </Link>
+            <Link
+                className="button"
+                to="/account"
+            >
+                Account settings
+            </Link>
         </div>
 
         <p>
@@ -100,5 +107,5 @@ export default function Trip() {
                 About PalShop
             </Link>
         </p>
-    </div>
+    </PageContainer>
 }

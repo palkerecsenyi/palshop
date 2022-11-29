@@ -1,4 +1,5 @@
 import * as functions from "firebase-functions"
+import { getFirestore } from "firebase-admin/firestore"
 
 export const verifyRequest = async (context: functions.https.CallableContext) => {
     if (context.app === undefined) {
@@ -13,4 +14,18 @@ export const verifyRequest = async (context: functions.https.CallableContext) =>
     }
 
     return context.auth.token.uid
+}
+
+export const getCustomer = async (userId: string) => {
+    const firestore = getFirestore()
+    const customer = await firestore.collection('customers').doc(userId).get()
+    const customerData = customer.data()
+    if (!customerData) {
+        throw new functions.https.HttpsError('internal', 'No customer found')
+    }
+
+    return customerData as {
+        customerId: string
+        skip: boolean
+    }
 }

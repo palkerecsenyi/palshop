@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom"
 import { formatTripStatus, usePastTrips } from "../data/trips"
 import { timestampFormat } from "../data/util"
+import HomeLink from "../components/HomeLink"
+import PageContainer from "../components/PageContainer"
 
 export default function TripHistory() {
     const [trips] = usePastTrips()
 
-    return <div className="container py-6 px-4">
-        <Link to="/" className="button mb-4">
-            Back home
-        </Link>
+    return <PageContainer>
+        <HomeLink />
 
         <h1 className="title">
             Trip history
@@ -27,5 +27,5 @@ export default function TripHistory() {
                 </Link>
             </p>
         </div>)}
-    </div>
+    </PageContainer>
 }

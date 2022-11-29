@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import { initializeApp } from "firebase-admin/app"
 import { getFirestore } from "firebase-admin/firestore"
 import Stripe from "stripe"
-import { verifyRequest } from "./util"
+import { getCustomer, verifyRequest } from "./util"
 import {getAuth} from "firebase-admin/auth";
 
 const stripe = new Stripe(functions.config().stripe.key, {
@@ -75,16 +75,10 @@ export const updatePrimaryPrice = regionalFunctions.firestore
 export const getDetails = regionalFunctions.https
     .onCall(async (data: any, context) => {
         const userId = await verifyRequest(context)
-
-        const firestore = getFirestore()
-        const customer = await firestore.collection('customers').doc(userId).get()
-        const customerData = customer.data()
-        if (!customerData) {
-            throw new functions.https.HttpsError('internal', 'No customer found')
-        }
+        const customer = await getCustomer(userId)
 
         const stripeCustomer = await stripe.customers.retrieve(
-            customerData.customerId,
+            customer.customerId,
             {
                 expand: ["invoice_credit_balance"]
             }
@@ -163,4 +157,17 @@ export const getOtherUserList = regionalFunctions.https
             name: e.displayName,
             id: e.uid,
         }))
+    })
+
+export const getBillingPortalLink = regionalFunctions.https
+    .onCall(async (data, context) => {
+        const userId = await verifyRequest(context)
+        const customer = await getCustomer(userId)
+        const session = await stripe.billingPortal.sessions.create({
+            customer: customer.customerId,
+            return_url: "https://shop.palk.me/account",
+        })
+        return {
+            link: session.url,
+        }
     })

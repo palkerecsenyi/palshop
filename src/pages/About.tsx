@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom"
+import PageContainer from "../components/PageContainer"
+import HomeLink from "../components/HomeLink"
 
 export default function About() {
-    return <div className="container py-6 px-4">
-        <Link to="/" className="button mb-4">
-            Back home
-        </Link>
+    return <PageContainer>
+        <HomeLink />
 
         <h1 className="title">
             About PalShop
@@ -95,5 +95,5 @@ export default function About() {
                 For general queries or concerns related to PalShop, customers should contact <strong>palshop-support@s.palk.me</strong>.
             </p>
         </div>
-    </div>
+    </PageContainer>
 }

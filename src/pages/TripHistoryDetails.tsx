@@ -1,8 +1,10 @@
-import { Link, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { formatTripStatus, usePastTrip } from "../data/trips"
 import { currencyFormat, timestampFormat } from "../data/util"
 import { useCart, useCartItems } from "../data/cart"
 import { useInvoiceData } from "../data/stripe"
+import PageContainer from "../components/PageContainer"
+import HomeLink from "../components/HomeLink"
 
 export default function TripHistoryDetails() {
     const { id } = useParams<{id: string}>()
@@ -13,10 +15,8 @@ export default function TripHistoryDetails() {
 
     const invoiceData = useInvoiceData(id, cart?.id)
 
-    return <div className="container py-6 px-4">
-        <Link to="/history" className="button mb-4">
-            Back to all trips
-        </Link>
+    return <PageContainer>
+        <HomeLink />
 
         <h1 className="title">
             Your shopping trip
@@ -93,5 +93,5 @@ export default function TripHistoryDetails() {
                 </div>
             </div>}
         </>}
-    </div>
+    </PageContainer>
 }
