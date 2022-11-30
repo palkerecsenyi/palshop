@@ -11,6 +11,7 @@ import { DateTime } from "luxon"
 import { WithId } from "./types"
 import { useMemo } from "react"
 import { getAuth } from "firebase/auth"
+import { getFunctions } from "firebase/functions"
 
 export const timestampFormat = (timestamp: Timestamp) => DateTime.fromJSDate(timestamp.toDate()).toFormat("DDDD HH:mm")
 
@@ -33,3 +34,4 @@ export const firestoreConverter = <T>(): FirestoreDataConverter<WithId<T>> => {
 
 export const useAuth = () => useMemo(() => getAuth(), [])
 export const useFirestore = () => useMemo(() => getFirestore(), [])
+export const useFunctions = () => useMemo(() => getFunctions(undefined, "europe-west2"), [])

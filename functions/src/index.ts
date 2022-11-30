@@ -1,17 +1,10 @@
 import * as functions from "firebase-functions";
 import { initializeApp } from "firebase-admin/app"
 import { getFirestore } from "firebase-admin/firestore"
-import Stripe from "stripe"
-import { getCustomer, verifyRequest } from "./util"
+import { getCustomer, regionalFunctions, stripe, verifyRequest } from "./util"
 import {getAuth} from "firebase-admin/auth";
 
-const stripe = new Stripe(functions.config().stripe.key, {
-    apiVersion: '2022-11-15',
-})
-
 initializeApp()
-
-const regionalFunctions = functions.region("europe-west2")
 
 type Price = {
     itemId: string
@@ -159,15 +152,4 @@ export const getOtherUserList = regionalFunctions.https
         }))
     })
 
-export const getBillingPortalLink = regionalFunctions.https
-    .onCall(async (data, context) => {
-        const userId = await verifyRequest(context)
-        const customer = await getCustomer(userId)
-        const session = await stripe.billingPortal.sessions.create({
-            customer: customer.customerId,
-            return_url: "https://shop.palk.me/account",
-        })
-        return {
-            link: session.url,
-        }
-    })
+export * from "./accountSettings"

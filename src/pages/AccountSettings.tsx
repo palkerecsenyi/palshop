@@ -1,22 +1,16 @@
 import PageContainer from "../components/PageContainer"
 import HomeLink from "../components/HomeLink"
-import { getBillingPortalLink, setAccountSetting, useMyAccountSettings } from "../data/account"
+import { setAccountSetting, useMyAccountSettings } from "../data/account"
 import Input from "../components/Input"
 import { useAuth } from "../data/util"
 import { useAuthState } from "react-firebase-hooks/auth"
-import { useCallback, useState } from "react"
+import React from "react"
+import { Link } from "react-router-dom"
 
 export default function AccountSettings() {
     const [settings, settingsLoading] = useMyAccountSettings()
     const auth = useAuth()
     const [authState] = useAuthState(auth)
-
-    const [viewLoading, setViewLoading] = useState(false)
-    const viewDashboard = useCallback(async () => {
-        setViewLoading(true)
-        const { link } = await getBillingPortalLink()
-        window.location.href = link
-    }, [])
 
     if (!authState) {
         return <></>
@@ -39,13 +33,6 @@ export default function AccountSettings() {
                 You can find some more settings on your payment dashboard. Click the button below to access it.
             </p>
 
-            <button
-                onClick={viewDashboard}
-                disabled={viewLoading}
-                className="button is-primary mt-4"
-            >
-                {viewLoading ? "Please wait..." : "View payment dashboard"}
-            </button>
         </div>
 
         {settingsLoading && <p>
@@ -61,13 +48,17 @@ export default function AccountSettings() {
                     onChange={(e) => setAccountSetting(userId, "autoCharge", e.target.checked)}
                 />
 
-                <p>
-                    {
-                        settings.autoCharge ?
-                            "Your default payment card will be charged automatically when an invoice is created. You can configure this card through your payment dashboard."
-                            : "You'll need to manually pay your invoices every time."
-                    }
-                </p>
+                {settings.autoCharge ? <p>
+                    <strong>
+                        You must first <Link to="/account/payment-method">configure a default card</Link>.
+                    </strong>
+                    &nbsp;Your default payment card will be charged automatically when an invoice is created.
+                    If this fails for any reason (e.g. you haven't set a default card), you'll be emailed an invoice
+                    as usual.
+                </p> : <p>
+                    You'll need to manually pay your invoices every time. An invoice will be emailed to you where you
+                    can enter your payment details.
+                </p>}
             </div>
         </div>}
     </PageContainer>

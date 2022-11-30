@@ -1,5 +1,6 @@
 import * as functions from "firebase-functions"
 import { getFirestore } from "firebase-admin/firestore"
+import Stripe from "stripe"
 
 export const verifyRequest = async (context: functions.https.CallableContext) => {
     if (context.app === undefined) {
@@ -29,3 +30,9 @@ export const getCustomer = async (userId: string) => {
         skip: boolean
     }
 }
+
+export const regionalFunctions = functions.region("europe-west2")
+
+export const stripe = new Stripe(functions.config().stripe.key, {
+    apiVersion: '2022-11-15',
+})

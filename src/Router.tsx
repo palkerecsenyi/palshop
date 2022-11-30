@@ -9,6 +9,7 @@ import TripHistoryDetails from "./pages/TripHistoryDetails"
 import ShopFees from "./pages/ShopFees"
 import About from "./pages/About"
 import AccountSettings from "./pages/AccountSettings"
+import AccountCardConfig from "./pages/AccountCardConfig"
 
 const router = createBrowserRouter([
     {
@@ -38,7 +39,11 @@ const router = createBrowserRouter([
             {
                 path: "account",
                 element: <AccountSettings />,
-            }
+            },
+            {
+                path: "account/payment-method",
+                element: <AccountCardConfig />,
+            },
         ]
     },
     {

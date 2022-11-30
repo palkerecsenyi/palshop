@@ -53,3 +53,12 @@ export const useInvoiceData = (tripId?: string, cartId?: string) => {
 
     return data
 }
+
+export const stripeCardBrandFormat = (cardBrand: string) => {
+    switch (cardBrand) {
+        case "visa":
+            return "Visa"
+        case "mastercard":
+            return "Mastercard"
+    }
+}
