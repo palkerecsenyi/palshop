@@ -7,10 +7,10 @@ import {
     getDoc,
     where, doc,
 } from "firebase/firestore"
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import type { WithId } from "./types"
 import { firestoreConverter, useCollectionFirst, useFirestore } from "./util"
-import { useCollectionData } from "react-firebase-hooks/firestore"
+import { useCollectionData, useCollectionDataOnce } from "react-firebase-hooks/firestore"
 
 export enum TripStatus {
     AcceptingOrders,
@@ -49,14 +49,12 @@ export const useTripContext = () => useContext(TripContext)
 
 export const usePastTrips = () => {
     const firestore = useFirestore()
-    const [trips, loading] = useCollectionData(
-        query(
-            collection(firestore, "trips"),
-            where("itemsDeadline", "<", Timestamp.now()),
-            orderBy("itemsDeadline", "desc"),
-        )
-            .withConverter(TripConverter)
-    )
+    const q = useMemo(() => query(
+        collection(firestore, "trips"),
+        where("itemsDeadline", "<", Timestamp.now()),
+        orderBy("itemsDeadline", "desc"),
+    ).withConverter(TripConverter), [firestore])
+    const [trips, loading] = useCollectionDataOnce(q)
 
     return [trips || [], loading] as const
 }
