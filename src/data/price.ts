@@ -1,9 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import { WithId } from "./types"
-import { collection, deleteDoc, doc, getDoc, getFirestore, onSnapshot, setDoc } from "firebase/firestore"
+import { collection, deleteDoc, doc, getFirestore, onSnapshot, setDoc } from "firebase/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth } from "firebase/auth"
-import { CartItem } from "./cart"
+import { CartItem, CartItemConverter } from "./cart"
+import { firestoreConverter, useAuth, useFirestore } from "./util"
+import { useDocumentDataOnce } from "react-firebase-hooks/firestore"
 
 export interface Price {
     itemId: string
@@ -15,28 +17,28 @@ export interface Price {
 
 export const LocalPricesContext = createContext<WithId<Price>[]>([])
 export const useLocalPricesContext = () => useContext(LocalPricesContext)
+export const PriceConverter = firestoreConverter<Price>()
 
 export const useAllPrices = (tripId?: string) => {
+    const firestore = useFirestore()
     const [prices, setPrices] = useState<WithId<Price>[]>([])
     const [user] = useAuthState(getAuth())
 
     useEffect(() => {
         if (!tripId || !user) return
-        const firestore = getFirestore()
-        return onSnapshot(collection(firestore, "trips", tripId, "prices"), snapshot => {
-            const docs = snapshot.docs.map(e => ({
-                ...e.data() as Price,
-                id: e.id,
-            }))
+        const q = collection(firestore, "trips", tripId, "prices").withConverter(PriceConverter)
+        return onSnapshot(q, snapshot => {
+            const docs = snapshot.docs.map(e => e.data())
             setPrices(docs)
         })
-    }, [tripId, user])
+    }, [tripId, user, firestore])
     return prices
 }
 
 export const usePricesSharedWithMeContext = () => {
     const allPrices = useLocalPricesContext()
-    const [user] = useAuthState(getAuth())
+    const auth = useAuth()
+    const [user] = useAuthState(auth)
     return useMemo(() => {
         if (!user?.uid) return []
 
@@ -57,22 +59,12 @@ export const useItemSharedToContext = (itemId?: string) => {
     }, [allPrices, itemId])
 }
 
-export const usePriceItem = (tripId: string, price: Price) => {
-    const [item, setItem] = useState<WithId<CartItem>>()
-    useEffect(() => {
-        const firestore = getFirestore();
-        (async () => {
-            const response = await getDoc(
-                doc(firestore, "trips", tripId, "carts", price.cartId, "items", price.itemId)
-            )
-            if (!response.exists()) return
-
-            setItem({
-                ...response.data() as CartItem,
-                id: response.id,
-            })
-        })()
-    })
+export const usePriceItem = (tripId: string, price: Price): WithId<CartItem> | undefined => {
+    const firestore = useFirestore()
+    const [item] = useDocumentDataOnce(
+        doc(firestore, "trips", tripId, "carts", price.cartId, "items", price.itemId)
+            .withConverter(CartItemConverter)
+    )
     return item
 }
 

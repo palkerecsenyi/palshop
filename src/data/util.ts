@@ -35,3 +35,7 @@ export const firestoreConverter = <T>(): FirestoreDataConverter<WithId<T>> => {
 export const useAuth = () => useMemo(() => getAuth(), [])
 export const useFirestore = () => useMemo(() => getFirestore(), [])
 export const useFunctions = () => useMemo(() => getFunctions(undefined, "europe-west2"), [])
+export const useCollectionFirst = <T>(d: T[] | undefined) => useMemo(() => {
+    if (!d || d.length === 0) return undefined
+    return d[0]
+}, [d])

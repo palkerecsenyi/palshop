@@ -1,17 +1,16 @@
 import {
     Timestamp,
-    getFirestore,
-    onSnapshot,
     query,
     collection,
     orderBy,
     limit,
-    getDocs,
     getDoc,
     where, doc,
 } from "firebase/firestore"
 import { createContext, useContext, useEffect, useState } from "react"
 import type { WithId } from "./types"
+import { firestoreConverter, useCollectionFirst, useFirestore } from "./util"
+import { useCollectionData } from "react-firebase-hooks/firestore"
 
 export enum TripStatus {
     AcceptingOrders,
@@ -29,66 +28,46 @@ export interface Trip {
 }
 
 export const TripContext = createContext<WithId<Trip> | undefined>(undefined)
+export const TripConverter = firestoreConverter<Trip>()
 
 export const useCurrentTrip = () => {
-    const [trip, setTrip] = useState<WithId<Trip> | undefined>(undefined)
-    const [loading, setLoading] = useState(true)
-    useEffect(() => {
-        const firestore = getFirestore()
-        const q = query(
+    const firestore = useFirestore()
+    const [trips, loading] = useCollectionData(
+        query(
             collection(firestore, "trips"),
             orderBy("itemsDeadline", "desc"),
             limit(1),
         )
-        return onSnapshot(q, snapshot => {
-            if (snapshot.empty) {
-                setTrip(undefined)
-            } else {
-                const doc = snapshot.docs[0]
-                setTrip({
-                    ...doc.data() as Trip,
-                    id: doc.id,
-                })
-            }
-            setLoading(false)
-        })
-    }, [])
+            .withConverter(TripConverter)
+    )
 
+    const trip = useCollectionFirst(trips)
     return [trip, loading] as const
 }
 
 export const useTripContext = () => useContext(TripContext)
 
 export const usePastTrips = () => {
-    const [trips, setTrips] = useState<WithId<Trip>[]>([])
-    const [loading, setLoading] = useState(true)
-    useEffect(() => {
-        (async () => {
-            const firestore = getFirestore()
-            const response = await getDocs(query(
-                collection(firestore, "trips"),
-                where("itemsDeadline", "<", Timestamp.now()),
-                orderBy("itemsDeadline", "desc"),
-            ))
-            const t = response.docs.map(e => ({
-                ...e.data() as Trip,
-                id: e.id,
-            }))
-            setTrips(t)
-            setLoading(false)
-        })()
-    }, [])
+    const firestore = useFirestore()
+    const [trips, loading] = useCollectionData(
+        query(
+            collection(firestore, "trips"),
+            where("itemsDeadline", "<", Timestamp.now()),
+            orderBy("itemsDeadline", "desc"),
+        )
+            .withConverter(TripConverter)
+    )
 
-    return [trips, loading] as const
+    return [trips || [], loading] as const
 }
 
 export const usePastTrip = (id?: string) => {
+    const firestore = useFirestore()
     const [trip, setTrip] = useState<WithId<Trip>>()
     const [loading, setLoading] = useState(true)
     useEffect(() => {
         if (!id) return
         (async () => {
-            const firestore = getFirestore()
             const response = await getDoc(doc(firestore, "trips", id))
             if (response.exists()) {
                 setTrip({
@@ -101,7 +80,7 @@ export const usePastTrip = (id?: string) => {
 
             setLoading(false)
         })()
-    }, [id])
+    }, [id, firestore])
     return [trip, loading] as const
 }
 

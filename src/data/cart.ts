@@ -14,11 +14,14 @@ import {
 } from "firebase/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth } from "firebase/auth"
+import { firestoreConverter, useFirestore } from "./util"
 
 export interface Cart {
     trip: string
     owner: string
 }
+
+export const CartConverter = firestoreConverter<Cart>()
 
 export interface CartItem {
     name: string
@@ -30,7 +33,10 @@ export interface CartItem {
     shopId: string
 }
 
+export const CartItemConverter = firestoreConverter<CartItem>()
+
 export const useCart = (tripId?: string) => {
+    const firestore = useFirestore()
     const [cart, setCart] = useState<WithId<Cart> | undefined>(undefined)
     const [loading, setLoading] = useState(true)
     const [authState] = useAuthState(getAuth())
@@ -38,25 +44,21 @@ export const useCart = (tripId?: string) => {
     useEffect(() => {
         if (!authState || !tripId) return
 
-        const firestore = getFirestore()
         const q = query(
             collection(firestore, "trips", tripId, "carts"),
             where("owner", "==", authState.uid)
-        )
+        ).withConverter(CartConverter)
         return onSnapshot(q, snapshot => {
             if (snapshot.empty) {
                 setCart(undefined)
             } else {
                 const d = snapshot.docs[0]
-                setCart({
-                    ...d.data() as Cart,
-                    id: d.id,
-                })
+                setCart(d.data())
             }
 
             setLoading(false)
         })
-    }, [tripId, authState])
+    }, [tripId, authState, firestore])
 
     return [cart, loading] as const
 }
@@ -71,20 +73,18 @@ export const createCart = async (tripId: string, userId: string) => {
 }
 
 export const useCartItems = (tripId?: string, cartId?: string) => {
+    const firestore = useFirestore()
     const [items, setItems] = useState<WithId<CartItem>[]>([])
     useEffect(() => {
         if (!tripId || !cartId) return
-        const firestore = getFirestore()
-        return onSnapshot(query(
+        const q = query(
             collection(firestore, "trips", tripId, "carts", cartId, "items"),
             orderBy("createdAt", "desc")
-        ), snapshot => {
-            setItems(snapshot.docs.map(e => ({
-                ...e.data() as CartItem,
-                id: e.id,
-            })))
+        ).withConverter(CartItemConverter)
+        return onSnapshot(q, snapshot => {
+            setItems(snapshot.docs.map(e => e.data()))
         })
-    }, [tripId, cartId])
+    }, [tripId, cartId, firestore])
     return items
 }
 

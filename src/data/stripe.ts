@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
-import { getFunctions, httpsCallable } from "firebase/functions"
+import { httpsCallable } from "firebase/functions"
+import { useFunctions } from "./util"
+import { useHttpsCallable } from "react-firebase-hooks/functions"
 
 interface StripeStatus {
     balance: number
@@ -7,15 +9,19 @@ interface StripeStatus {
 }
 export const useStripeStatus = () => {
     const [status, setStatus] = useState<StripeStatus>()
+    const functions = useFunctions()
+    const [callable] = useHttpsCallable<undefined, StripeStatus>(functions, "getDetails")
 
     useEffect(() => {
         (async () => {
-            const functions = getFunctions(undefined, "europe-west2")
-            const response = await httpsCallable<{ token: string }, StripeStatus>(functions, "getDetails")()
-
+            const response = await callable()
+            if (!response) {
+                setStatus(undefined)
+                return
+            }
             setStatus(response.data)
         })()
-    }, [])
+    }, [callable])
 
     return status
 }
@@ -26,14 +32,13 @@ interface StripeInvoiceData {
     number: string
     link: string
 }
-
 export const useInvoiceData = (tripId?: string, cartId?: string) => {
     const [data, setData] = useState<StripeInvoiceData>()
+    const functions = useFunctions()
 
     useEffect(() => {
         if (!tripId || !cartId) return
         (async () => {
-            const functions = getFunctions(undefined, "europe-west2")
             const func = httpsCallable<{ tripId: string, cartId: string }, StripeInvoiceData>(
                 functions,
                 "getCartInvoiceStatus",
@@ -42,14 +47,14 @@ export const useInvoiceData = (tripId?: string, cartId?: string) => {
             try {
                 const response = await func({
                     tripId,
-                    cartId
+                    cartId,
                 })
                 setData(response.data)
             } catch (e) {
                 setData(undefined)
             }
         })()
-    }, [tripId, cartId])
+    }, [tripId, cartId, functions])
 
     return data
 }
