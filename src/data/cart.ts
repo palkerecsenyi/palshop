@@ -6,7 +6,6 @@ import {
     onSnapshot,
     query,
     where,
-    addDoc,
     setDoc,
     doc,
     deleteDoc,
@@ -15,6 +14,7 @@ import {
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth } from "firebase/auth"
 import { firestoreConverter, useFirestore } from "./util"
+import { v4 as uuid } from "uuid"
 
 export interface Cart {
     trip: string
@@ -69,7 +69,8 @@ export const createCart = async (tripId: string, userId: string) => {
         trip: tripId,
         owner: userId,
     }
-    await addDoc(collection(firestore, "trips", tripId, "carts"), cart)
+    const newCartId = uuid()
+    await setDoc(doc(firestore, "trips", tripId, "carts", newCartId), cart)
 }
 
 export const useCartItems = (tripId?: string, cartId?: string) => {
