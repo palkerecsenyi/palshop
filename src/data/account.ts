@@ -10,6 +10,7 @@ import { loadStripe } from "@stripe/stripe-js"
 
 export interface AccountSettings {
     autoCharge: boolean
+    compensationMethod: "credit" | "refund"
 }
 
 export const AccountSettingsConverter = firestoreConverter<AccountSettings>()
@@ -25,10 +26,11 @@ export const useMyAccountSettings = (): readonly [WithId<AccountSettings>, boole
     return [settings || {
         id: "",
         autoCharge: false,
+        compensationMethod: "credit",
     }, loading] as const
 }
 
-export const setAccountSetting = async (userId: string, settingName: keyof AccountSettings, value: boolean) => {
+export const setAccountSetting = async (userId: string, settingName: keyof AccountSettings, value: any) => {
     const firestore = getFirestore()
     await setDoc(doc(firestore, "account_settings", userId), {
         [settingName]: value,

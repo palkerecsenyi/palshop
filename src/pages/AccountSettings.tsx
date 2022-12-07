@@ -6,6 +6,7 @@ import { useAuth } from "../data/util"
 import { useAuthState } from "react-firebase-hooks/auth"
 import React from "react"
 import { Link } from "react-router-dom"
+import Select from "../components/Select"
 
 export default function AccountSettings() {
     const [settings, settingsLoading] = useMyAccountSettings()
@@ -59,6 +60,27 @@ export default function AccountSettings() {
                     You'll need to manually pay your invoices every time. An invoice will be emailed to you where you
                     can enter your payment details.
                 </p>}
+            </div>
+
+            <div className="box">
+                <Select
+                    label="How do you want to receive compensation?"
+                    options={[
+                        ["credit", "Add credit to my account"],
+                        ["refund", "Refund to my payment card"],
+                    ]}
+                    value={settings.compensationMethod}
+                    onChange={(e) => setAccountSetting(userId, "compensationMethod", e.target.value)}
+                />
+
+                <p>
+                    This refers to the compensation you get when an item is substituted or cancelled, or something
+                    is ordered incorrectly or accidentally omitted from your order.
+                </p>
+                <p>
+                    Whenever compensation is applied, regardless of your chosen method, your invoice will have a credit
+                    note attached and you'll be emailed a notification.
+                </p>
             </div>
         </div>}
     </PageContainer>
