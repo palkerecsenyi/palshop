@@ -1,20 +1,5 @@
-$success: #13540c;
-$success-light: #c7ecc4;
-$success-dark: #288128;
-
 @import "bulma/bulma";
 
 body, html, #root {
   height: 100%;
-}
-
-@font-face {
-  font-family: Christmas;
-  src: url("../assets/ChristmasFont.ttf");
-}
-
-.title {
-  font-family: Christmas, Inter, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-  font-size: 3rem;
-  color: #cc0202;
 }

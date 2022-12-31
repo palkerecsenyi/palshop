@@ -10,7 +10,7 @@ export default function ShopFees() {
         <HomeLink />
 
         <h1 className="title">
-            Current shop fees
+            Current delivery fees
         </h1>
 
         <p>
