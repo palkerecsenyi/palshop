@@ -18,6 +18,7 @@ jobs:
         env:
           CI: false
           REACT_APP_STRIPE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+          REACT_APP_MOTD_URL: ${{ secrets.MOTD_URL }}
       - uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting

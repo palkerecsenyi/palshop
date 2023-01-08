@@ -16,6 +16,7 @@ import { LocalPricesContext, useAllPrices } from "../data/price"
 import CartSharedWithMe from "../components/Cart/SharedList/CartSharedWithMe"
 import PageContainer from "../components/PageContainer"
 import HomeLink from "../components/HomeLink"
+import MotD from "../components/MotD"
 
 export default function Cart() {
     const trip = useTripContext()
@@ -66,6 +67,8 @@ export default function Cart() {
         {!cart && !cartLoading && <CartInit />}
 
         {cart && <LocalPricesContext.Provider value={allPrices}>
+            <MotD />
+
             <p className={`${total > 0 ? 'mt-4' : 'my-4'} is-size-4`}>
                 Your total: <strong>{currencyFormat(total)}</strong>
             </p>
