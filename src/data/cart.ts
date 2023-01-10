@@ -23,10 +23,16 @@ export interface Cart {
 
 export const CartConverter = firestoreConverter<Cart>()
 
+export interface CartItemSubstitution {
+    name: string
+    price: number
+}
+
 export interface CartItem {
     name: string
     quantity: number
     price: number
+    substitution?: CartItemSubstitution
     createdAt: Timestamp
     // for collectionGroup queries
     tripId: string

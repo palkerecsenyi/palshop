@@ -92,7 +92,7 @@ export default function Trip() {
                 className="button"
                 to="/history"
             >
-                Trip history
+                Track trips
             </Link>
             <Link
                 className="button"

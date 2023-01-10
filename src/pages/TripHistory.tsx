@@ -11,15 +11,15 @@ export default function TripHistory() {
         <HomeLink />
 
         <h1 className="title">
-            Trip history
+            Trip tracker
         </h1>
 
         {trips.map(trip => <div className="box mb-4" key={trip.id}>
             <p className="is-size-4">
-                Closed: <strong>{timestampFormat(trip.itemsDeadline)}</strong>
+                {timestampFormat(trip.itemsDeadline)}
             </p>
             <p>
-                Currently {formatTripStatus(trip.status)}
+                Status: {formatTripStatus(trip.status)}
             </p>
             <p>
                 <Link to={`/history/${trip.id}`}>

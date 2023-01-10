@@ -88,6 +88,14 @@ export default function TripHistoryDetails() {
                     <ul>
                         {cartItems.map(item => <li key={item.id}>
                             {item.name} (x{item.quantity}) — {currencyFormat(item.price)}
+
+                            {item.substitution && <ul>
+                                <li>
+                                    {item.substitution.price === 0 ? "Cancelled" : <>
+                                        Substituted by {item.substitution.name} ({currencyFormat(item.price)})
+                                    </>}
+                                </li>
+                            </ul>}
                         </li>)}
                     </ul>
                 </div>
