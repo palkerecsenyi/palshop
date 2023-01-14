@@ -34,7 +34,7 @@ export default function CartEdit(
         if (isNaN(parsedPrice)) return
 
         const item: Partial<CartItem> = {
-            name,
+            name: name.trim(),
             quantity,
             price: parsedPrice,
             shopId: shop,
