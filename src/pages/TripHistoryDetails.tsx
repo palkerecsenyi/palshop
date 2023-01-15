@@ -92,7 +92,7 @@ export default function TripHistoryDetails() {
                             {item.substitution && <ul>
                                 <li>
                                     {item.substitution.price === 0 ? "Cancelled" : <>
-                                        Substituted by {item.substitution.name} ({currencyFormat(item.price)})
+                                        Substituted by {item.substitution.name} ({currencyFormat(item.substitution.price)})
                                     </>}
                                 </li>
                             </ul>}
