@@ -117,7 +117,11 @@ export default function CartEdit(
             />}
 
             <div className="buttons">
-                <button type="submit" disabled={loading} className="button is-primary">
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className={`button is-primary ${loading ? 'is-loading' : ''}`}
+                >
                     Save
                 </button>
                 <button className="button" disabled={loading} onClick={onDismiss}>

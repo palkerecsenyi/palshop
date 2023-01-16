@@ -62,7 +62,7 @@ export default function CartCopyModal(
         title="Copy cart"
         footer={(
             <button
-                className="button is-success"
+                className={`button is-success ${copyLoading ? 'is-loading' : ''}`}
                 disabled={selectedTrip === "" || copyLoading}
                 onClick={doCopy}
             >

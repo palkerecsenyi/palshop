@@ -10,7 +10,7 @@ import CartCopyModal from "../components/Cart/CartCopyModal"
 import { useEstimatedTotal } from "../data/total"
 import Input from "../components/Input"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
+import { faCopy, faMagnifyingGlass, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { useShopMetadataContext } from "../data/shops"
 import { LocalPricesContext, useAllPrices } from "../data/price"
 import CartSharedWithMe from "../components/Cart/SharedList/CartSharedWithMe"
@@ -86,12 +86,14 @@ export default function Cart() {
             <div className="field is-grouped">
                 {!adding && <p className="control">
                    <button className="button is-primary" onClick={() => setAdding(true)}>
-                       Add item
+                       <FontAwesomeIcon icon={faPlus} />
+                       &nbsp; Add item
                    </button>
                 </p>}
                 <p className="control">
                    <button className="button" onClick={() => setShowCopyModal(true)}>
-                       Copy cart
+                       <FontAwesomeIcon icon={faCopy} />
+                       &nbsp; Copy cart
                    </button>
                 </p>
             </div>

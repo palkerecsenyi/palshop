@@ -83,13 +83,19 @@ export default function AccountCardConfig() {
                 />
 
                 <button
-                    className="button is-primary"
+                    className={`button is-primary ${confirmLoading ? 'is-loading' : ''}`}
                     onClick={confirm}
                     disabled={confirmLoading}
                 >
-                    {confirmLoading ? "Loading, this may take a while..." : "Set up & save"}
+                    Set up & save
                 </button>
             </div>
+
+            {confirmLoading && <div className="block">
+                <p>
+                    Please wait, this may take a couple seconds...
+                </p>
+            </div>}
 
             {done && <div className="block">
                 <p>

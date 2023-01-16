@@ -4,6 +4,8 @@ import { useCallback, useMemo, useState } from "react"
 import CartEdit from "./CartEdit"
 import { WithId } from "../../data/types"
 import { ShopMetadata } from "../../data/shops"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons"
 
 type props = {
     item: WithId<CartItem>
@@ -50,11 +52,13 @@ export default function CartItemComponent(
 
         {!readOnly &&
             <div className="buttons mt-2">
-                <button className="button" onClick={() => setEditing(true)}>
-                    Edit
+                <button className="button is-outlined is-primary" onClick={() => setEditing(true)}>
+                    <FontAwesomeIcon icon={faEdit} />
+                    &nbsp; Edit
                 </button>
-                <button className="button" onClick={deleteMe}>
-                    Delete
+                <button className="button is-outlined is-danger" onClick={deleteMe}>
+                    <FontAwesomeIcon icon={faTrash} />
+                    &nbsp; Delete
                 </button>
             </div>
         }
