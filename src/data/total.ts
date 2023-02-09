@@ -34,7 +34,7 @@ export const useEstimatedTotal = (cartItems: WithId<CartItem>[], allPrices: With
         }
 
         // Stripe processing fee for UK cards (incl. 0.4% invoice fee)
-        const processingFee = (total / 100) * 1.8 + 20
+        const processingFee = (total / 100) * 1.9 + 20
         return [total + processingFee + deliveryFees, total] as const
     }, [shops, cartItems, allPrices, user?.uid])
 }
