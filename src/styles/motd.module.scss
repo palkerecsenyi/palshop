@@ -1,0 +1,15 @@
+.motdMessageContainer {
+  & > p:not(:last-child) {
+    margin-bottom: 0.5em !important;
+  }
+
+  ul, ul ul, ul ul ul {
+    margin-top: 0 !important;
+    margin-bottom: 0.5em !important;
+  }
+
+  ul ul li, ul ul ul li {
+    margin-top: -0.5em;
+    margin-bottom: 0.5em;
+  }
+}

@@ -1,5 +1,6 @@
 import { useMotD } from "../data/motd"
 import ReactMarkdown from "react-markdown"
+import styles from "../styles/motd.module.scss"
 
 export default function MotD() {
     const motd = useMotD()
@@ -12,9 +13,11 @@ export default function MotD() {
             <p>Message</p>
         </div>
         <div className="message-body">
-            <ReactMarkdown>
-                {motd}
-            </ReactMarkdown>
+            <div className={`content ${styles.motdMessageContainer}`}>
+                <ReactMarkdown>
+                    {motd}
+                </ReactMarkdown>
+            </div>
         </div>
     </article>
 }
