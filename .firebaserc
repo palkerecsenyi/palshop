@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "palshop-web"
-  }
+  },
+  "targets": {
+    "palshop-web": {
+      "hosting": {
+        "app": [
+          "palshop-web"
+        ],
+        "motd": [
+          "palshop-motd"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
