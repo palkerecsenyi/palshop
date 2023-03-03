@@ -10,13 +10,14 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "16"
+    "node": "18"
   },
   "main": "lib/index.js",
   "dependencies": {
     "@google-cloud/tasks": "^3.1.1",
     "firebase-admin": "^11.5.0",
     "firebase-functions": "^4.2.1",
+    "google-auth-library": "^8.7.0",
     "stripe": "^11.10.0"
   },
   "devDependencies": {
