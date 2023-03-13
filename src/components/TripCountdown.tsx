@@ -93,6 +93,11 @@ export default function TripCountdown () {
         }} />
     }
 
+    if (timeRemaining.days < 0 || timeRemaining.hours < 0 || timeRemaining.minutes < 0 || timeRemaining.seconds < 0) {
+        // the trip deadline has already passed, it wouldn't make sense to display anything
+        return <></>
+    }
+
     if (timeRemaining.days > 0) {
         return <TripCountdownMini timeRemaining={timeRemaining} />
     }
