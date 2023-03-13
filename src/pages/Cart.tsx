@@ -17,6 +17,7 @@ import CartSharedWithMe from "../components/Cart/SharedList/CartSharedWithMe"
 import PageContainer from "../components/PageContainer"
 import HomeLink from "../components/HomeLink"
 import MotD from "../components/MotD"
+import TripCountdown from "../components/TripCountdown"
 
 export default function Cart() {
     const trip = useTripContext()
@@ -67,6 +68,7 @@ export default function Cart() {
         {!cart && !cartLoading && <CartInit />}
 
         {cart && <LocalPricesContext.Provider value={allPrices}>
+            <TripCountdown />
             <MotD />
 
             <p className={`${total > 0 ? 'mt-4' : 'my-4'} is-size-4`}>
