@@ -13,13 +13,18 @@ jobs:
         with:
           node-version: 16
 
-      - run: yarn install --frozen-lockfile
-      - run: yarn build
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build React
+        run: yarn build
         env:
           CI: false
           REACT_APP_STRIPE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
           REACT_APP_MOTD_URL: ${{ secrets.MOTD_URL }}
-      - uses: w9jds/firebase-action@master
+
+      - name: Deploy to Firebase Hosting
+        uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting
         env:
