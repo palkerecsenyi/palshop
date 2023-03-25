@@ -18,9 +18,9 @@ type props = {
 export default function CartEdit(
     {initialItem, onDismiss, tripId, cartId, shops}: props
 ) {
-    const [name, setName] = useState(initialItem?.name || "")
-    const [quantity, setQuantity] = useState(initialItem?.quantity || 0)
-    const [price, setPrice] = useState(initialItem?.price ? (initialItem.price / 100).toString() : "")
+    const [name, setName] = useState(initialItem?.name ?? "")
+    const [quantity, setQuantity] = useState(initialItem?.quantity ?? 0)
+    const [price, setPrice] = useState(initialItem?.price != undefined ? (initialItem.price / 100).toString() : "")
     const [shop, setShop] = useState(initialItem?.shopId || "")
     const [id] = useState(initialItem?.id || uuid())
 
@@ -31,7 +31,7 @@ export default function CartEdit(
         if (!name || !quantity || !price || !shop) return
 
         const parsedPrice = parseFloat(price) * 100
-        if (isNaN(parsedPrice)) return
+        if (isNaN(parsedPrice) || parsedPrice < 0) return
 
         const item: Partial<CartItem> = {
             name: name.trim(),
