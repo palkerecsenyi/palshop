@@ -20,7 +20,7 @@ export default function CartEdit(
 ) {
     const [name, setName] = useState(initialItem?.name ?? "")
     const [quantity, setQuantity] = useState(initialItem?.quantity ?? 0)
-    const [price, setPrice] = useState(initialItem?.price != undefined ? (initialItem.price / 100).toString() : "")
+    const [price, setPrice] = useState(initialItem?.price !== undefined ? (initialItem.price / 100).toString() : "")
     const [shop, setShop] = useState(initialItem?.shopId || "")
     const [id] = useState(initialItem?.id || uuid())
 
