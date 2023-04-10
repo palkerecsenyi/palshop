@@ -73,7 +73,8 @@ export default function TripCountdown () {
     const [timeRemaining, setTimeRemaining] = useState<TimeRemaining>()
     useEffect(() => {
         if (!trip) return
-        const interval = setInterval(() => {
+
+        const callback = () => {
             const timeUntilTrip = DateTime.fromJSDate(trip.itemsDeadline.toDate()).diffNow(["days", "hours", "minutes", "seconds"])
             setTimeRemaining({
                 days: timeUntilTrip.days,
@@ -81,7 +82,10 @@ export default function TripCountdown () {
                 minutes: Math.floor(timeUntilTrip.minutes),
                 seconds: Math.floor(timeUntilTrip.seconds),
             })
-        }, 500)
+        }
+
+        const interval = setInterval(callback, 500)
+        callback()
         return () => {
             clearInterval(interval)
         }

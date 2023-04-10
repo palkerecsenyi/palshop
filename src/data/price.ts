@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo } from "react"
 import { WithId } from "./types"
 import { collection, deleteDoc, doc, getFirestore, onSnapshot, setDoc } from "firebase/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
@@ -6,6 +6,8 @@ import { getAuth } from "firebase/auth"
 import { CartItem, CartItemConverter } from "./cart"
 import { firestoreConverter, useAuth, useFirestore } from "./util"
 import { useDocumentDataOnce } from "react-firebase-hooks/firestore"
+import { useAppDispatch, useAppSelector } from "../stores/hooks"
+import { updateAllPrices } from "../stores/trip"
 
 export interface Price {
     itemId: string
@@ -15,28 +17,29 @@ export interface Price {
     price: number
 }
 
-export const LocalPricesContext = createContext<WithId<Price>[]>([])
-export const useLocalPricesContext = () => useContext(LocalPricesContext)
 export const PriceConverter = firestoreConverter<Price>()
 
-export const useAllPrices = (tripId?: string) => {
+export const useAllPrices = () => {
     const firestore = useFirestore()
-    const [prices, setPrices] = useState<WithId<Price>[]>([])
+    const tripId = useAppSelector(state => state.tripsReducer.currentTrip?.id)
     const [user] = useAuthState(getAuth())
+
+    const dispatch = useAppDispatch()
 
     useEffect(() => {
         if (!tripId || !user) return
         const q = collection(firestore, "trips", tripId, "prices").withConverter(PriceConverter)
         return onSnapshot(q, snapshot => {
             const docs = snapshot.docs.map(e => e.data())
-            setPrices(docs)
+            dispatch(updateAllPrices(docs))
         })
-    }, [tripId, user, firestore])
-    return prices
+    }, [tripId, user, firestore, dispatch])
 }
 
-export const usePricesSharedWithMeContext = () => {
-    const allPrices = useLocalPricesContext()
+const useAllPricesSelector = () => useAppSelector(state => state.tripsReducer.allPrices)
+
+export const usePricesSharedWithMeSelector = () => {
+    const allPrices = useAllPricesSelector()
     const auth = useAuth()
     const [user] = useAuthState(auth)
     return useMemo(() => {
@@ -49,7 +52,7 @@ export const usePricesSharedWithMeContext = () => {
 }
 
 export const useItemSharedToContext = (itemId?: string) => {
-    const allPrices = useLocalPricesContext()
+    const allPrices = useAllPricesSelector()
     return useMemo(() => {
         if (!itemId) return []
 

@@ -1,4 +1,4 @@
-import { usePricesSharedWithMeContext } from "../../../data/price"
+import { usePricesSharedWithMeSelector } from "../../../data/price"
 import CartSharedWithMeItem from "./CartSharedWithMeItem"
 
 type props = {
@@ -8,7 +8,7 @@ type props = {
 export default function CartSharedWithMe(
     {tripId, cartId}: props
 ) {
-    const pricesSharedWithMe = usePricesSharedWithMeContext()
+    const pricesSharedWithMe = usePricesSharedWithMeSelector()
 
     if (pricesSharedWithMe.length === 0) {
         return <></>

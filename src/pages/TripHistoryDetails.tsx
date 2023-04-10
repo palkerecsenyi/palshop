@@ -1,17 +1,16 @@
 import { useParams } from "react-router-dom"
 import { formatTripStatus, usePastTrip } from "../data/trips"
 import { currencyFormat, timestampFormat } from "../data/util"
-import { useCart, useCartItems } from "../data/cart"
 import { useInvoiceData } from "../data/stripe"
 import PageContainer from "../components/PageContainer"
 import HomeLink from "../components/HomeLink"
+import { useAppSelector } from "../stores/hooks"
 
 export default function TripHistoryDetails() {
     const { id } = useParams<{id: string}>()
     const [trip, tripLoading] = usePastTrip(id)
 
-    const [cart, cartLoading] = useCart(id)
-    const cartItems = useCartItems(id, cart?.id)
+    const {cart, cartLoading, cartItems} = useAppSelector(state => state.tripsReducer)
 
     const invoiceData = useInvoiceData(id, cart?.id)
 

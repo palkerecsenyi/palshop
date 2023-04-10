@@ -1,5 +1,4 @@
 import { formatTripStatus, TripStatus, useTripSelector } from "../data/trips"
-import { useCart, useCartItems } from "../data/cart"
 import CartInit from "../components/Cart/CartInit"
 import CartEmpty from "../components/Cart/CartEmpty"
 import { useMemo, useState } from "react"
@@ -12,19 +11,16 @@ import Input from "../components/Input"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCopy, faMagnifyingGlass, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { useShopMetadataSelector } from "../data/shops"
-import { LocalPricesContext, useAllPrices } from "../data/price"
 import CartSharedWithMe from "../components/Cart/SharedList/CartSharedWithMe"
 import PageContainer from "../components/PageContainer"
 import HomeLink from "../components/HomeLink"
 import MotD from "../components/MotD"
 import TripCountdown from "../components/TripCountdown"
+import { useAppSelector } from "../stores/hooks"
 
 export default function Cart() {
     const trip = useTripSelector()
-    const [cart, cartLoading] = useCart(trip?.id)
-    const cartItems = useCartItems(trip?.id, cart?.id)
-
-    const allPrices = useAllPrices(trip?.id)
+    const {cart, cartLoading, cartItems, allPrices} = useAppSelector(state => state.tripsReducer)
 
     const [adding, setAdding] = useState(false)
     const [showCopyModal, setShowCopyModal] = useState(false)
@@ -67,7 +63,7 @@ export default function Cart() {
 
         {!cart && !cartLoading && <CartInit />}
 
-        {cart && <LocalPricesContext.Provider value={allPrices}>
+        {cart && <>
             <TripCountdown />
             <MotD />
 
@@ -127,6 +123,6 @@ export default function Cart() {
                 cartId={cart.id}
                 shops={shops}
             />)}
-        </LocalPricesContext.Provider>}
+        </>}
     </PageContainer>
 }

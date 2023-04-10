@@ -1,9 +1,9 @@
-import { useMotD } from "../data/motd"
 import ReactMarkdown from "react-markdown"
+import { useAppSelector } from "../stores/hooks"
 import styles from "../styles/motd.module.scss"
 
 export default function MotD() {
-    const motd = useMotD()
+    const motd = useAppSelector(state => state.tripsReducer.motd)
     if (motd === undefined) {
         return <></>
     }
