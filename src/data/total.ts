@@ -1,13 +1,13 @@
 import type { WithId } from "./types"
 import type { CartItem } from "./cart"
-import { useShopMetadataContext } from "./shops"
+import { useShopMetadataSelector } from "./shops"
 import { useMemo } from "react"
 import type { Price } from "./price"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth } from "firebase/auth"
 
 export const useEstimatedTotal = (cartItems: WithId<CartItem>[], allPrices: WithId<Price>[]) => {
-    const shops = useShopMetadataContext()
+    const shops = useShopMetadataSelector()
     const [user] = useAuthState(getAuth())
 
     return useMemo(() => {

@@ -1,11 +1,11 @@
-import { createContext, useContext } from "react"
+import { useEffect } from "react"
 import { collection, query, where } from "firebase/firestore"
-import { WithId } from "./types"
 import { firestoreConverter, useFirestore } from "./util"
 import { useCollectionDataOnce } from "react-firebase-hooks/firestore"
+import { useAppDispatch, useAppSelector } from "../stores/hooks"
+import { updateShops } from "../stores/shops"
 
-export const ShopMetadataContext = createContext<WithId<ShopMetadata>[]>([])
-export const useShopMetadataContext = () => useContext(ShopMetadataContext)
+export const useShopMetadataSelector = () => useAppSelector(state => state.shopsReducer.shops)
 
 export interface ShopMetadata {
     name: string
@@ -21,5 +21,8 @@ export const useShopMetadata = () => {
         where("hidden", "==", false)
     ).withConverter(ShopConverter))
 
-    return shops || []
+    const dispatch = useAppDispatch()
+    useEffect(() => {
+        dispatch(updateShops(shops ?? []))
+    }, [shops, dispatch])
 }

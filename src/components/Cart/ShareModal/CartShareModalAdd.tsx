@@ -1,10 +1,10 @@
-import { useOtherUsersContext } from "../../../data/sharing"
 import Select from "../../Select"
 import { FormEvent, useCallback, useMemo, useState } from "react"
 import Input from "../../Input"
 import { Price, setPrice as savePrice } from "../../../data/price"
 import {v4 as uuid} from "uuid"
 import { WithId } from "../../../data/types"
+import { useOtherUsersSelector } from "../../../stores/otherUsers"
 
 type props = {
     itemId: string
@@ -16,7 +16,7 @@ type props = {
 export default function CartShareModalAdd(
     {tripId, done: callback, itemId, cartId, shares}: props
 ) {
-    const otherUsers = useOtherUsersContext()
+    const otherUsers = useOtherUsersSelector()
     const [userId, setUserId] = useState("")
     const [price, setPrice] = useState("")
     const [loading, setLoading] = useState(false)

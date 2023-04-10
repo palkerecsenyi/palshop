@@ -2,11 +2,12 @@ import { firestoreConverter, useAuth, useFirestore, useFunctions } from "./util"
 import { useDocumentData } from "react-firebase-hooks/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { doc, getFirestore, setDoc } from "firebase/firestore"
-import { WithId } from "./types"
 import { getFunctions, httpsCallable } from "firebase/functions"
 import { useEffect, useState } from "react"
 import { useHttpsCallable } from "react-firebase-hooks/functions"
 import { loadStripe } from "@stripe/stripe-js"
+import { useAppDispatch } from "../stores/hooks"
+import { updateSettings } from "../stores/userDetails"
 
 export interface AccountSettings {
     autoCharge: boolean
@@ -14,7 +15,7 @@ export interface AccountSettings {
 }
 
 export const AccountSettingsConverter = firestoreConverter<AccountSettings>()
-export const useMyAccountSettings = (): readonly [WithId<AccountSettings>, boolean] => {
+export const useMyAccountSettings = () => {
     const firestore = useFirestore()
     const auth = useAuth()
     const [authState] = useAuthState(auth)
@@ -23,11 +24,10 @@ export const useMyAccountSettings = (): readonly [WithId<AccountSettings>, boole
             .withConverter(AccountSettingsConverter)
     )
 
-    return [settings || {
-        id: "",
-        autoCharge: false,
-        compensationMethod: "credit",
-    }, loading] as const
+    const dispatch = useAppDispatch()
+    useEffect(() => {
+        dispatch(updateSettings(settings))
+    }, [dispatch, settings, loading])
 }
 
 export const setAccountSetting = async (userId: string, settingName: keyof AccountSettings, value: any) => {

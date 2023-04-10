@@ -7,10 +7,12 @@ import {
     getDoc,
     where, doc,
 } from "firebase/firestore"
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import type { WithId } from "./types"
 import { firestoreConverter, useCollectionFirst, useFirestore } from "./util"
 import { useCollectionData, useCollectionDataOnce } from "react-firebase-hooks/firestore"
+import { useAppDispatch, useAppSelector } from "../stores/hooks"
+import { clearTrip, updateTrip } from "../stores/trip"
 
 export enum TripStatus {
     AcceptingOrders,
@@ -27,10 +29,10 @@ export interface Trip {
     status: TripStatus
 }
 
-export const TripContext = createContext<WithId<Trip> | undefined>(undefined)
 export const TripConverter = firestoreConverter<Trip>()
 
 export const useCurrentTrip = () => {
+    const dispatch = useAppDispatch()
     const firestore = useFirestore()
     const [trips, loading] = useCollectionData(
         query(
@@ -42,10 +44,18 @@ export const useCurrentTrip = () => {
     )
 
     const trip = useCollectionFirst(trips)
-    return [trip, loading] as const
+    useEffect(() => {
+        if (loading) return
+
+        if (trip) {
+            dispatch(updateTrip(trip))
+        } else {
+            dispatch(clearTrip())
+        }
+    }, [trip, loading, dispatch])
 }
 
-export const useTripContext = () => useContext(TripContext)
+export const useTripSelector = () => useAppSelector(state => state.tripsReducer.currentTrip)
 
 export const usePastTrips = () => {
     const firestore = useFirestore()

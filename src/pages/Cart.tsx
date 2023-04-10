@@ -1,4 +1,4 @@
-import { formatTripStatus, TripStatus, useTripContext } from "../data/trips"
+import { formatTripStatus, TripStatus, useTripSelector } from "../data/trips"
 import { useCart, useCartItems } from "../data/cart"
 import CartInit from "../components/Cart/CartInit"
 import CartEmpty from "../components/Cart/CartEmpty"
@@ -11,7 +11,7 @@ import { useEstimatedTotal } from "../data/total"
 import Input from "../components/Input"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCopy, faMagnifyingGlass, faPlus } from "@fortawesome/free-solid-svg-icons"
-import { useShopMetadataContext } from "../data/shops"
+import { useShopMetadataSelector } from "../data/shops"
 import { LocalPricesContext, useAllPrices } from "../data/price"
 import CartSharedWithMe from "../components/Cart/SharedList/CartSharedWithMe"
 import PageContainer from "../components/PageContainer"
@@ -20,7 +20,7 @@ import MotD from "../components/MotD"
 import TripCountdown from "../components/TripCountdown"
 
 export default function Cart() {
-    const trip = useTripContext()
+    const trip = useTripSelector()
     const [cart, cartLoading] = useCart(trip?.id)
     const cartItems = useCartItems(trip?.id, cart?.id)
 
@@ -30,7 +30,7 @@ export default function Cart() {
     const [showCopyModal, setShowCopyModal] = useState(false)
 
     const [estimatedTotal, total] = useEstimatedTotal(cartItems, allPrices)
-    const shops = useShopMetadataContext()
+    const shops = useShopMetadataSelector()
 
     const [searchQuery, setSearchQuery] = useState("")
     const searchResults = useMemo(() => {

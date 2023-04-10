@@ -1,7 +1,7 @@
 import { WithId } from "../../../data/types"
 import { Price, usePriceItem } from "../../../data/price"
 import CartItemComponent from "../CartItem"
-import { useShopMetadataContext } from "../../../data/shops"
+import { useShopMetadataSelector } from "../../../data/shops"
 import { useMemo } from "react"
 import { CartItem } from "../../../data/cart"
 
@@ -14,7 +14,7 @@ export default function CartSharedWithMeItem(
     {tripId, cartId, price}: props
 ) {
     const item = usePriceItem(tripId, price)
-    const shops = useShopMetadataContext()
+    const shops = useShopMetadataSelector()
 
     const modifiedItem = useMemo(() => {
         return {

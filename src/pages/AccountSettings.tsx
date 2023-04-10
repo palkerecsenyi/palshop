@@ -1,15 +1,15 @@
 import PageContainer from "../components/PageContainer"
 import HomeLink from "../components/HomeLink"
-import { setAccountSetting, useMyAccountSettings } from "../data/account"
+import { setAccountSetting } from "../data/account"
 import Input from "../components/Input"
 import { useAuth } from "../data/util"
 import { useAuthState } from "react-firebase-hooks/auth"
-import React from "react"
 import { Link } from "react-router-dom"
 import Select from "../components/Select"
+import { useAppSelector } from "../stores/hooks"
 
 export default function AccountSettings() {
-    const [settings, settingsLoading] = useMyAccountSettings()
+    const {settings, settingsLoading} = useAppSelector(state => state.userDetailsReducer)
     const auth = useAuth()
     const [authState] = useAuthState(auth)
 

@@ -1,10 +1,10 @@
-import { useShopMetadataContext } from "../data/shops"
+import { useShopMetadataSelector } from "../data/shops"
 import { currencyFormat } from "../data/util"
 import PageContainer from "../components/PageContainer"
 import HomeLink from "../components/HomeLink"
 
 export default function ShopFees() {
-    const shops = useShopMetadataContext()
+    const shops = useShopMetadataSelector()
 
     return <PageContainer>
         <HomeLink />

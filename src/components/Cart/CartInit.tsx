@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { useTripContext } from "../../data/trips"
+import { useTripSelector } from "../../data/trips"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { getAuth } from "firebase/auth"
 import { createCart } from "../../data/cart"
@@ -7,7 +7,7 @@ import { Link } from "react-router-dom"
 
 export default function CartInit() {
     const [loading, setLoading] = useState(false)
-    const trip = useTripContext()
+    const trip = useTripSelector()
     const [authState] = useAuthState(getAuth())
     const submit = useCallback(async () => {
         if (!trip || !authState) return

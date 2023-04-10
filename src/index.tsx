@@ -4,6 +4,8 @@ import Router from './Router';
 import { initializeApp } from "firebase/app"
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
 import "./styles/main.scss"
+import { Provider } from 'react-redux';
+import { appStore } from './stores/stores';
 
 const app = initializeApp({
     apiKey: "AIzaSyA7Zj5BDWoDVP78sF19qFG7fpUGNAgAA44",
@@ -23,6 +25,8 @@ const root = ReactDOM.createRoot(
 )
 root.render(
     <React.StrictMode>
-        <Router />
+        <Provider store={appStore}>
+            <Router />
+        </Provider>
     </React.StrictMode>
 )

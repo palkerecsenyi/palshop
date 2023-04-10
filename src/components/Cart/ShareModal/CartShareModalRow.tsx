@@ -1,8 +1,8 @@
 import { WithId } from "../../../data/types"
 import { deletePrice, Price } from "../../../data/price"
-import { useOtherUsersContext } from "../../../data/sharing"
 import { FormEvent, useCallback, useMemo, useState } from "react"
 import { currencyFormat } from "../../../data/util"
+import { useOtherUsersSelector } from "../../../stores/otherUsers"
 
 type props = {
     tripId: string
@@ -11,7 +11,7 @@ type props = {
 export default function CartShareModalRow(
     {tripId, price}: props
 ) {
-    const otherUsers = useOtherUsersContext()
+    const otherUsers = useOtherUsersSelector()
     const owner = useMemo(() => {
         return otherUsers.find(e => e.id === price.userId)
     }, [price.userId, otherUsers])

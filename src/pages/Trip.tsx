@@ -1,14 +1,14 @@
-import { formatTripStatus, TripStatus, useTripContext } from "../data/trips"
+import { formatTripStatus, TripStatus, useTripSelector } from "../data/trips"
 import { currencyFormat, timestampFormat } from "../data/util"
 import { Link } from "react-router-dom"
-import { useStripeStatus } from "../data/stripe"
 import { useCallback } from "react"
 import { getAuth, signOut } from "firebase/auth"
 import PageContainer from "../components/PageContainer"
+import { useAppSelector } from "../stores/hooks"
 
 export default function Trip() {
-    const trip = useTripContext()
-    const status = useStripeStatus()
+    const trip = useTripSelector()
+    const status = useAppSelector(state => state.userDetailsReducer)
 
     const logOut = useCallback(async () => {
         const auth = getAuth()
@@ -36,7 +36,7 @@ export default function Trip() {
         </p>
 
         {status && <p>
-            Your invoices will be emailed to <strong>{status.email}</strong>.
+            Your invoices will be emailed to <strong>{status.invoiceEmail}</strong>.
         </p>}
 
         {status && status.balance !== 0 && <article className={`message mt-4 ${status.balance > 0 ? 'is-success' : 'is-danger'}`}>

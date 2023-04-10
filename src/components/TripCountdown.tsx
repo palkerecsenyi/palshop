@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
 import { useEffect, useState } from "react"
-import { useTripContext } from "../data/trips"
+import { useTripSelector } from "../data/trips"
 
 interface TimeRemaining {
     days: number
@@ -68,7 +68,7 @@ const TripCountdownMini = ({
 }
 
 export default function TripCountdown () {
-    const trip = useTripContext()
+    const trip = useTripSelector()
 
     const [timeRemaining, setTimeRemaining] = useState<TimeRemaining>()
     useEffect(() => {
