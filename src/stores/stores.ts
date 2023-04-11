@@ -3,6 +3,7 @@ import tripsReducer from "./trip"
 import shopsReducer from "./shops"
 import otherUsersReducer from "./otherUsers"
 import userDetailsReducer from "./userDetails"
+import historicTripsReducer from "./historicTrips"
 
 export const appStore = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ export const appStore = configureStore({
         shopsReducer,
         otherUsersReducer,
         userDetailsReducer,
+        historicTripsReducer,
     },
     middleware: (getDefaultMiddleware) => 
         getDefaultMiddleware({

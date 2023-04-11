@@ -1,16 +1,24 @@
 import { useParams } from "react-router-dom"
-import { formatTripStatus, usePastTrip } from "../data/trips"
+import { formatTripStatus } from "../data/trips"
 import { currencyFormat, timestampFormat } from "../data/util"
 import { useInvoiceData } from "../data/stripe"
 import PageContainer from "../components/PageContainer"
 import HomeLink from "../components/HomeLink"
 import { useAppSelector } from "../stores/hooks"
+import { useHistoricTrips } from "../stores/historicTrips"
+import { useMemo } from "react"
+import { useCart, useCartItems } from "../data/cart"
 
 export default function TripHistoryDetails() {
     const { id } = useParams<{id: string}>()
-    const [trip, tripLoading] = usePastTrip(id)
+    useHistoricTrips()
+    const {trips, tripsLoading} = useAppSelector(state => state.historicTripsReducer)
+    const trip = useMemo(() => {
+        return trips.find(e => e.id === id)
+    }, [trips, id])
 
-    const {cart, cartLoading, cartItems} = useAppSelector(state => state.tripsReducer)
+    const [cart, cartLoading] = useCart(trip?.id)
+    const [cartItems] = useCartItems(trip?.id, cart?.id)
 
     const invoiceData = useInvoiceData(id, cart?.id)
 
@@ -21,7 +29,7 @@ export default function TripHistoryDetails() {
             Your shopping trip
         </h1>
 
-        {!tripLoading && !trip && <article className="message is-danger">
+        {!tripsLoading && !trip && <article className="message is-danger">
             <div className="message-body">
                 <p>
                     <strong>Trip not found!</strong>&nbsp;Make sure you've entered the trip ID correctly.

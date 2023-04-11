@@ -1,11 +1,15 @@
 import { Link } from "react-router-dom"
-import { formatTripStatus, usePastTrips } from "../data/trips"
+import { formatTripStatus } from "../data/trips"
 import { timestampFormat } from "../data/util"
 import HomeLink from "../components/HomeLink"
 import PageContainer from "../components/PageContainer"
+import { useHistoricTrips } from "../stores/historicTrips"
+import { useAppSelector } from "../stores/hooks"
 
 export default function TripHistory() {
-    const [trips] = usePastTrips()
+    useHistoricTrips()
+
+    const trips = useAppSelector(state => state.historicTripsReducer.trips)
 
     return <PageContainer>
         <HomeLink />

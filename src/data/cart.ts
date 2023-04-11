@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import {
     collection,
     getFirestore,
@@ -16,6 +16,7 @@ import { firestoreConverter, useFirestore } from "./util"
 import { v4 as uuid } from "uuid"
 import { useAppDispatch, useAppSelector } from "../stores/hooks"
 import { clearCartCache, updateCart, updateCartItems } from "../stores/trip"
+import { WithId } from "./types"
 
 export interface Cart {
     trip: string
@@ -42,12 +43,15 @@ export interface CartItem {
 
 export const CartItemConverter = firestoreConverter<CartItem>()
 
-export const useCart = () => {
-    const tripId = useAppSelector(state => state.tripsReducer.currentTrip?.id)
+export function useCart(argTripId?: string) {
+    const globalTripId = useAppSelector(state => state.tripsReducer.currentTrip?.id)
+    const tripId = argTripId ?? globalTripId
     const firestore = useFirestore()
     const [authState] = useAuthState(getAuth())
 
     const dispatch = useAppDispatch()
+    const [cart, setCart] = useState<WithId<Cart>>()
+    const [loading, setLoading] = useState<boolean>(true)
 
     useEffect(() => {
         if (!authState || !tripId) return
@@ -58,16 +62,23 @@ export const useCart = () => {
         ).withConverter(CartConverter)
         return onSnapshot(q, snapshot => {
             if (snapshot.empty) {
-                dispatch(clearCartCache())
+                setCart(undefined)
+                if (!argTripId) dispatch(clearCartCache())
             } else {
                 const d = snapshot.docs[0]
-                dispatch(updateCart({
+                const newCart = {
                     ...d.data(),
                     id: d.id,
-                }))
+                }
+                setCart(newCart)
+                if (!argTripId) dispatch(updateCart(newCart))
             }
+
+            setLoading(false)
         })
-    }, [tripId, authState, firestore, dispatch])
+    }, [tripId, authState, firestore, dispatch, argTripId])
+
+    return [cart, loading] as const
 }
 
 export const createCart = async (tripId: string, userId: string) => {
@@ -80,9 +91,14 @@ export const createCart = async (tripId: string, userId: string) => {
     await setDoc(doc(firestore, "trips", tripId, "carts", newCartId), cart)
 }
 
-export const useCartItems = () => {
-    const tripId = useAppSelector(state => state.tripsReducer.currentTrip?.id)
-    const cartId = useAppSelector(state => state.tripsReducer.cart?.id)
+export const useCartItems = (argTripId?: string, argCartId?: string) => {
+    const globalTripId = useAppSelector(state => state.tripsReducer.currentTrip?.id)
+    const tripId = argTripId ?? globalTripId
+    const globalCartId = useAppSelector(state => state.tripsReducer.cart?.id)
+    const cartId = argCartId ?? globalCartId
+
+    const [cartItems, setCartItems] = useState<WithId<CartItem>[]>([])
+    const [loading, setLoading] = useState(true)
 
     const firestore = useFirestore()
     const dispatch = useAppDispatch()
@@ -93,9 +109,14 @@ export const useCartItems = () => {
             orderBy("createdAt", "desc")
         ).withConverter(CartItemConverter)
         return onSnapshot(q, snapshot => {
-            dispatch(updateCartItems(snapshot.docs.map(e => e.data())))
+            const newCartItems = snapshot.docs.map(e => e.data())
+            if (!argTripId && !argCartId) dispatch(updateCartItems(newCartItems))
+            setLoading(false)
+            setCartItems(newCartItems)
         })
-    }, [tripId, cartId, firestore, dispatch])
+    }, [tripId, cartId, firestore, dispatch, argTripId, argCartId])
+
+    return [cartItems, loading] as const
 }
 
 export const setCartItem = async (tripId: string, cartId: string, itemId: string, item: Partial<CartItem>) => {

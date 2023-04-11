@@ -93,7 +93,7 @@ export const tripsSlice = createSlice({
         updateAllPrices(state, action: PayloadAction<WithId<Price>[]>) {
             state.allPrices = action.payload
             state.allPricesLoading = false
-        }
+        },
     },
     extraReducers: builder => {
         builder.addCase(fetchMotd.fulfilled, (state, action) => {

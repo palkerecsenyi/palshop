@@ -1,4 +1,3 @@
-import { usePastTrips } from "../../data/trips"
 import Select from "../Select"
 import { useCallback, useMemo, useState } from "react"
 import { timestampFormat } from "../../data/util"
@@ -7,6 +6,8 @@ import { getAuth } from "firebase/auth"
 import { copyCart } from "../../data/cart"
 import ErrorComponent from "../Error"
 import Modal from "../Modal"
+import { useAppSelector } from "../../stores/hooks"
+import { useHistoricTrips } from "../../stores/historicTrips"
 
 type props = {
     tripId: string
@@ -17,7 +18,8 @@ type props = {
 export default function CartCopyModal(
     {tripId, cartId, close}: props
 ) {
-    const [pastTrips, pastTripsLoading] = usePastTrips()
+    useHistoricTrips()
+    const {trips: pastTrips, tripsLoading: pastTripsLoading} = useAppSelector(state => state.historicTripsReducer)
 
     const [selectedTrip, setSelectedTrip] = useState("")
     const tripOptions = useMemo(() => {
