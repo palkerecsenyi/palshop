@@ -5,6 +5,7 @@ import Select from "../components/Select"
 import { stripeCardBrandFormat } from "../data/stripe"
 import { Link } from "react-router-dom"
 import ErrorComponent from "../components/Error"
+import LoadingText from "../components/LoadingText"
 
 export default function AccountCardConfig() {
     const paymentMethodsData = useCardList()
@@ -60,11 +61,7 @@ export default function AccountCardConfig() {
             Configure your default payment card
         </h1>
 
-        {!paymentMethodsData && <>
-            <p>
-                Loading...
-            </p>
-        </>}
+        {!paymentMethodsData && <LoadingText />}
         {paymentMethodsData && <>
             <div className="block">
                 <p>
