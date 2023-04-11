@@ -1,15 +1,17 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Login from "./pages/Login"
 import RootPage from "./RootPage"
-import ResetPassword from "./pages/ResetPassword"
 import Trip from "./pages/Trip"
 import Cart from "./pages/Cart"
 import TripHistory from "./pages/TripHistory"
 import TripHistoryDetails from "./pages/TripHistoryDetails"
-import ShopFees from "./pages/ShopFees"
-import About from "./pages/About"
-import AccountSettings from "./pages/AccountSettings"
-import AccountCardConfig from "./pages/AccountCardConfig"
+import { lazy, Suspense } from "react"
+
+const AccountSettings = lazy(() => import("./pages/AccountSettings"))
+const AccountCardConfig = lazy(() => import("./pages/AccountCardConfig"))
+const ShopFees = lazy(() => import("./pages/ShopFees"))
+const About = lazy(() => import("./pages/About"))
+const ResetPassword = lazy(() => import("./pages/ResetPassword"))
 
 const router = createBrowserRouter([
     {
@@ -61,5 +63,7 @@ const router = createBrowserRouter([
 ])
 
 export default function Router() {
-    return <RouterProvider router={router} />
+    return <Suspense>
+        <RouterProvider router={router} />
+    </Suspense>
 }

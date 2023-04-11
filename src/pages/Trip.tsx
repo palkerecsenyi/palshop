@@ -1,14 +1,22 @@
 import { formatTripStatus, TripStatus, useTripSelector } from "../data/trips"
 import { currencyFormat, timestampFormat } from "../data/util"
 import { Link } from "react-router-dom"
-import { useCallback } from "react"
+import { useCallback, useMemo } from "react"
 import { getAuth, signOut } from "firebase/auth"
 import PageContainer from "../components/PageContainer"
 import { useAppSelector } from "../stores/hooks"
+import MotD from "../components/MotD"
 
 export default function Trip() {
     const trip = useTripSelector()
     const status = useAppSelector(state => state.userDetailsReducer)
+
+    const stringCompensationMethod = useMemo(() => {
+        switch (status.settings.compensationMethod) {
+            case "credit": return "credit to your account"
+            case "refund": return "a refund to your payment method"
+        }
+    }, [status.settings.compensationMethod])
 
     const logOut = useCallback(async () => {
         const auth = getAuth()
@@ -25,19 +33,56 @@ export default function Trip() {
         </button>
 
         <h1 className="title">
-            Current shopping trip
+            Welcome to PalShop!
         </h1>
 
-        <p>
-            The deadline for item submissions is <strong>{timestampFormat(trip.itemsDeadline)}</strong>.
-        </p>
-        <p>
-            Shortly after this time, payments will open. Please pay invoices by <strong>{timestampFormat(trip.paymentDeadline)}</strong>.
-        </p>
+        <div className="columns is-variable is-6">
+            <div className="column">
+                {trip.status === TripStatus.AcceptingOrders && <p>
+                    Please add your items by <strong>{timestampFormat(trip.itemsDeadline)}</strong>.
+                </p>}
+                <p>
+                    Invoices must be paid within 24 hours of being sent. You can&nbsp;
+                    <Link to="/account">
+                        turn on automatic payments
+                    </Link>
+                    &nbsp;to make this easier.
+                </p>
 
-        {status && <p>
-            Your invoices will be emailed to <strong>{status.invoiceEmail}</strong>.
-        </p>}
+                {status && <p>
+                    Your invoices will be emailed to <strong>{status.invoiceEmail}</strong>
+                </p>}
+
+                {!status.settingsLoading && <p>
+                    You'll receive compensation (for substitutions, cancellations, etc.) as <strong>{stringCompensationMethod}</strong>.
+                    You can&nbsp;
+                    <Link to="/account">
+                        change this
+                    </Link>.
+                </p>}
+            </div>
+            <div className="column">
+                <article className={`message ${trip.status === TripStatus.AcceptingOrders ? 'is-success' : 'is-info'}`}>
+                    <div className="message-header">
+                        <p>Order status</p>
+                    </div>
+                    <div className="message-body">
+                        <p>
+                            This shopping trip is currently <strong>{formatTripStatus(trip.status)}</strong>.
+                        </p>
+                        {trip.status === TripStatus.AcceptingOrders && <p>
+                            You can use the button below to register your cart contents.
+                        </p>}
+                        {trip.status === TripStatus.OrderPlacedAwaitingDelivery && <p>
+                            Delivery is scheduled for <strong>{timestampFormat(trip.delivery)}</strong>.
+                        </p>}
+                        {trip.status === TripStatus.Complete && <p>
+                            The next shopping trip will be opened soon! Please ask Pal if you really need it open now.
+                        </p>}
+                    </div>
+                </article>
+            </div>
+        </div>
 
         {status && status.balance !== 0 && <article className={`message mt-4 ${status.balance > 0 ? 'is-success' : 'is-danger'}`}>
             <div className="message-body">
@@ -61,25 +106,7 @@ export default function Trip() {
             </div>
         </article>}
 
-        <article className={`message mt-4 ${trip.status === TripStatus.AcceptingOrders ? 'is-success' : 'is-info'}`}>
-            <div className="message-header">
-                <p>Order status</p>
-            </div>
-            <div className="message-body">
-                <p>
-                    This shopping trip is currently <strong>{formatTripStatus(trip.status)}</strong>.
-                </p>
-                {trip.status === TripStatus.AcceptingOrders && <p>
-                    You can use the button below to register your cart contents.
-                </p>}
-                {trip.status === TripStatus.OrderPlacedAwaitingDelivery && <p>
-                    Delivery is scheduled for <strong>{timestampFormat(trip.delivery)}</strong>.
-                </p>}
-                {trip.status === TripStatus.Complete && <p>
-                    The next shopping trip will be opened soon! Please ask Pal if you really need it open now.
-                </p>}
-            </div>
-        </article>
+        <MotD />
 
         <div className="buttons">
             {trip.status === TripStatus.AcceptingOrders && <Link
