@@ -61,11 +61,12 @@ export default function Cart() {
             My shopping cart
         </h1>
 
+        <MotD />
+
         {!cart && !cartLoading && <CartInit />}
 
         {cart && <>
             <TripCountdown />
-            <MotD />
 
             <p className={`${total > 0 ? 'mt-4' : 'my-4'} is-size-4`}>
                 Your total: <strong>{currencyFormat(total)}</strong>
