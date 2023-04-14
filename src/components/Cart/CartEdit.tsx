@@ -32,6 +32,7 @@ export default function CartEdit(
 
         const parsedPrice = parseFloat(price) * 100
         if (isNaN(parsedPrice) || parsedPrice < 0) return
+        if (quantity <= 0) return
 
         const item: Partial<CartItem> = {
             name: name.trim(),
