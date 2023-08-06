@@ -10,6 +10,9 @@
         ],
         "motd": [
           "palshop-motd"
+        ],
+        "product-api": [
+          "palshop-product-api"
         ]
       }
     }
