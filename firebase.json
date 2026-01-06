@@ -36,18 +36,6 @@
           }
         }
       ]
-    },
-    {
-      "target": "product-api",
-      "rewrites": [
-        {
-          "source": "**",
-          "run": {
-            "serviceId": "palshop-product-api",
-            "region": "europe-west2"
-          }
-        }
-      ]
     }
   ]
 }
