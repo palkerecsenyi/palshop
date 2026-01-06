@@ -1,6 +1,6 @@
-import ReactMarkdown from "react-markdown"
+// import ReactMarkdown from "react-markdown"
 import { useAppSelector } from "../stores/hooks"
-import styles from "../styles/markdown.module.scss"
+// import styles from "../styles/markdown.module.scss"
 
 export default function MotD() {
     const motd = useAppSelector(state => state.tripsReducer.motd)
@@ -8,6 +8,9 @@ export default function MotD() {
         return <></>
     }
 
+    return <></>
+
+    /**
     return <article className="message">
         <div className="message-header">
             <p>Message</p>
@@ -20,4 +23,5 @@ export default function MotD() {
             </div>
         </div>
     </article>
+    **/
 }
